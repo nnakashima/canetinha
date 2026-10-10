@@ -4,6 +4,12 @@
   "description": "Canetinha Mágica — caixa de ferramentas da Consultoria Proselling",
   "private": true,
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "engines": { "node": ">=18" }
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": "github:nnakashima/canetinha",
+  "homepage": "https://canetinha.metamode.com.br"
 }

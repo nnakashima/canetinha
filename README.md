@@ -1,43 +1,45 @@
 # Canetinha Mágica
 
-Caixa de ferramentas da Consultoria Proselling para desenvolvimento de empresários.
-Hub estilo streaming + episódios gamificados, com Google Analytics 4 (G-7SWLQJ3ND5).
+**Caixa de ferramentas da Consultoria Proselling para desenvolvimento de empresários.**
 
-## Estrutura
-- `server.js` — servidor Node sem dependências (porta `PORT`, health check em `/healthz`).
-- `public/index.html` — hub (vitrine).
-- `public/matrizfdem/index.html` — episódio 01, Matriz FDEM.
-- `public/assets/` — ícones e imagens de prévia do link (WhatsApp/redes).
+Série de mini web apps gamificados ("episódios"), pensados para o celular e divulgados por link no WhatsApp. Um hub no estilo streaming reúne os episódios em prateleiras.
 
-## Endereços dos episódios
-Cada episódio tem um endereço curto, sem acentos nem hífens (maiúsculas e barra final são redirecionadas):
-`/matrizfdem`, `/r5`, `/vendadecombo`, `/delivery`, `/contratarpessoas`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas`.
-- Episódio publicado: servido de `public/<slug>/index.html`.
-- Episódio "em breve": abre o hub com a ficha do episódio.
-- O servidor lê os slugs do catálogo do hub (`title:"…", slug:"…"` em `EPISODES`). Endereços antigos ficam em `LEGACY` no `server.js` (ex.: `/matriz-fdem` → `/matrizfdem`).
+- **Produção:** https://canetinha.metamode.com.br
+- **Versão atual:** 1.0.0 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
+- **Repositório:** github.com/nnakashima/canetinha → deploy automático no Railway a cada push em `main`
 
-## GA4
-Toda página envia `content_group` (`hub`, `episodio`, `episodio_em_breve`) e `episode_id` (o slug).
-No GA4: Relatórios → Engajamento → Páginas e telas (caminho da página) ou Grupo de conteúdo.
-Para filtrar eventos por episódio, registre `episode_id` como dimensão personalizada (escopo: evento) em Administrador → Definições personalizadas.
+| Endereço | O que abre |
+|---|---|
+| `/` | Hub (vitrine com prateleiras Gestão e Lançamentos) |
+| `/matrizfdem` | Episódio 01 · Matriz FDEM (Administração do Tempo) |
+| `/r5`, `/vendadecombo`, `/delivery`, `/contratarpessoas`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas` | Hub com a ficha do episódio "Em breve!" aberta |
+| `/version` | Versão em JSON |
+| `/healthz` | Health check |
 
 ## Rodar local
+```bash
+npm start            # http://localhost:3000  (Node 18+, sem dependências)
+PORT=4000 npm start  # outra porta
 ```
-npm start   # http://localhost:3000
+
+## Estrutura
+```
+server.js                    servidor HTTP sem dependências (rotas, redirecionamentos, injeção de variáveis)
+package.json                 versão do sistema (fonte única)
+public/index.html            hub (vitrine): catálogo EPISODES, capas ilustradas em SVG, abertura animada
+public/matrizfdem/index.html episódio 01 (jogo, relatórios, PDF, voz, som)
+public/assets/               favicon, ícone iOS e imagens de prévia de link (og-*.jpg, 1200×630)
+public/robots.txt
+docs/                        documentação detalhada
 ```
 
-## Deploy no Railway
-- Pelo painel: New Project → Deploy from GitHub repo (ou `railway up` na pasta). Railway detecta Node e roda `npm start`.
-- Settings → Networking → Generate Domain (ou Custom Domain, ex.: canetinha.nakashima.com.br).
-- Opcional: variável `PUBLIC_URL=https://seu-dominio` para fixar o endereço usado nas prévias de link.
+## Documentação
+- [Arquitetura e rotas](docs/arquitetura.md): servidor, catálogo, variáveis injetadas, armazenamento local
+- [Design e identidade](docs/design.md): cores, tipografia, abertura, capas, gamificação, som
+- [Episódio Matriz FDEM](docs/episodio-matriz-fdem.md): fases, regras, relatórios, voz
+- [Analytics (GA4)](docs/analytics.md): parâmetros, eventos, dimensões, relatórios
+- [Operação](docs/operacao.md): deploy, domínio/DNS, versão, rollback, links antigos
+- [Como criar um novo episódio](docs/novo-episodio.md)
 
-## Eventos GA4
-Hub: `episode_details`, `episode_play`, `sound_toggle`.
-Episódio (com `episode_id`): `episode_start`, `episode_resume`, `phase_complete` (phase, phase_name), `level_up`,
-`card_classified` (category), `trophy_reached` (xp, hours_recovered), `report_screen`, `report_image`, `report_pdf`
-(method: shared/saved), `report_whatsapp`, `report_copy`, `voice_input` (speech/keyboard_help), `sound_toggle`.
-
-## Novo episódio
-1. Criar `public/<slug>/index.html` a partir do episódio Matriz FDEM.
-2. No hub (`public/index.html`), no objeto `EPISODES`: manter `slug`, mudar para `status:"live"`, `url:"/<slug>"`, `store:"<chave localStorage>"`, `num`, textos.
-3. Gerar `public/assets/og-<slug>.jpg` (1200×630) e publicar.
+## Créditos
+Proselling · Ferramentas de uso interno em programas de aceleração comercial e desenvolvimento de lideranças.

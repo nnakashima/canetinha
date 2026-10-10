@@ -11,6 +11,7 @@ const path = require("path");
 const zlib = require("zlib");
 
 const PORT = process.env.PORT || 3000;
+const VERSION = require("./package.json").version;
 const ROOT = path.join(__dirname, "public");
 const HUB = path.join(ROOT, "index.html");
 const TYPES = {
@@ -52,6 +53,7 @@ function send(req, res, file, opts = {}) {
   const headers = {
     "Content-Type": TYPES[ext] || "application/octet-stream",
     "X-Content-Type-Options": "nosniff",
+    "X-App-Version": VERSION,
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Cache-Control": ext === ".html" ? "no-cache" : "public, max-age=86400"
   };
@@ -69,7 +71,8 @@ function send(req, res, file, opts = {}) {
     html = html
       .replace(/__ORIGIN__/g, origin(req))
       .replace(/__CGROUP__/g, opts.group || "hub")
-      .replace(/__EPISODE__/g, opts.episode || "");
+      .replace(/__EPISODE__/g, opts.episode || "")
+      .replace(/__VERSION__/g, VERSION);
     body = Buffer.from(html);
   }
   if (/\bgzip\b/.test(req.headers["accept-encoding"] || "") && /html|javascript|css|json|svg/.test(headers["Content-Type"])) {
@@ -84,6 +87,10 @@ function redirect(res, to, code = 301) { res.writeHead(code, { Location: to }); 
 
 http.createServer((req, res) => {
   if (req.url === "/healthz") { res.writeHead(200, { "Content-Type": "text/plain" }); return res.end("ok"); }
+  if (req.url === "/version") {
+    res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-cache" });
+    return res.end(JSON.stringify({ name: "canetinha", version: VERSION, episodes: Object.keys(EPISODES) }));
+  }
   if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405); return res.end(); }
 
   const [rawPath, query] = req.url.split("?");
@@ -112,4 +119,4 @@ http.createServer((req, res) => {
   const file = staticFile(p);
   if (!file || path.basename(file) === "index.html") return redirect(res, "/", 302);
   send(req, res, file);
-}).listen(PORT, () => console.log(`Canetinha Mágica no ar na porta ${PORT} — episódios: ${Object.keys(EPISODES).join(", ")}`));
+}).listen(PORT, () => console.log(`Canetinha Mágica v${VERSION} no ar na porta ${PORT} — episódios: ${Object.keys(EPISODES).join(", ")}`));

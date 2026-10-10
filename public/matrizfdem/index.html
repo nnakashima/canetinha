@@ -23,7 +23,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-7SWLQJ3ND5', { content_group: '__CGROUP__', episode_id: '__EPISODE__' });
+  gtag('config', 'G-7SWLQJ3ND5', { content_group: '__CGROUP__', episode_id: '__EPISODE__', app_version: '__VERSION__' });
 </script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Matriz FDEM</title>
@@ -238,6 +238,7 @@ input[type=date]{min-height:50px}
 .ach.on{opacity:1;background:var(--surface2);box-shadow:inset 0 0 0 2px var(--f)}
 .ach svg{width:26px;height:26px;color:var(--f)}
 .copyarea{width:100%;min-height:180px;font-size:13px;font-weight:600}
+.ver{display:inline-block;margin-top:6px;font-variant-numeric:tabular-nums;opacity:.85}
 .hub-link{display:inline-block;margin-bottom:14px;padding:10px 16px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--fg);font-weight:900;font-size:13px;text-decoration:none}
 .foot{text-align:center;color:var(--dim);font-size:12px;margin-top:24px;font-weight:600}
 
@@ -895,7 +896,7 @@ let doneSnapshot = [];
 function render(focusId){
   const app = $("#app");
   const body = S.step < 0 ? screenWelcome() : SCREENS[S.step]();
-  app.innerHTML = `<div class="wrap">${S.step<0?"":hudHTML()}${body}<div class="foot"><a class="hub-link" href="/">‹ Todos os episódios da Canetinha Mágica</a><div class="brand"><img src="${LOGO_MARK}" alt=""><img src="${LOGO_WORD}" alt="Proselling"></div>${PROGRAM} · Episódio ${EPISODE}<br>Ferramenta de uso interno em programas de aceleração comercial e desenvolvimento de lideranças.</div></div>`;
+  app.innerHTML = `<div class="wrap">${S.step<0?"":hudHTML()}${body}<div class="foot"><a class="hub-link" href="/">‹ Todos os episódios da Canetinha Mágica</a><div class="brand"><img src="${LOGO_MARK}" alt=""><img src="${LOGO_WORD}" alt="Proselling"></div>${PROGRAM} · Episódio ${EPISODE}<br>Ferramenta de uso interno em programas de aceleração comercial e desenvolvimento de lideranças.<br><span class="ver">Canetinha Mágica v__VERSION__</span></div></div>`;
   micDecorate(); syncSound();
   hud();
   doneSnapshot = PH.map((_,i)=>complete(i));
