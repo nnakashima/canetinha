@@ -431,6 +431,20 @@ function blank(){
     weekly:[row(),row(),row()], monthly:[row(),row()], cls:{}, plan:{},
     fin:{invest:"",first:"",review:"",who:""}, name:"", step:-1};
 }
+/* progresso trazido do link antigo (#p=...) */
+(function importProgress(){
+  const m = location.hash.match(/^#p=([A-Za-z0-9_-]+)/); if(!m) return;
+  try{
+    const b64 = m[1].replace(/-/g,"+").replace(/_/g,"/");
+    const inc = JSON.parse(decodeURIComponent(escape(atob(b64))));
+    let cur = null; try{ cur = JSON.parse(localStorage.getItem(KEY) || "null"); }catch(e){}
+    if(inc && typeof inc === "object" && (!cur || (inc.step ?? -1) > (cur.step ?? -1))){
+      localStorage.setItem(KEY, JSON.stringify(inc));
+      track("progress_imported", {step: inc.step ?? -1});
+    }
+  }catch(e){}
+  try{ history.replaceState(null, "", location.pathname); }catch(e){}
+})();
 let S = load();
 function load(){
   try{ const raw = localStorage.getItem(KEY); if(raw){ const o = JSON.parse(raw); return Object.assign(blank(), o); } }catch(e){}
