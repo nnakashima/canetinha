@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.0.1] — 2026-10-10
+### Alterado
+- Imagens de prévia do link (WhatsApp/redes) refeitas com a capa atual da Matriz FDEM (poste de direções) e as fontes da marca, para o hub e para o episódio. Novos arquivos `og-canetinha-v2.jpg` e `og-matrizfdem-v2.jpg` (nome novo força o WhatsApp a buscar a imagem nova).
+
 ## [1.0.0] — 2026-10-10
 Primeira versão em produção em https://canetinha.metamode.com.br.
 
