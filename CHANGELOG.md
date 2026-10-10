@@ -3,6 +3,14 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.0.2] — 2026-10-10
+### Corrigido
+- Matriz FDEM, fases 4 e 5: no iPhone (Safari) o campo de data invadia o campo ao lado ("Até quando" / "Quem vai me cobrar"). O campo de data agora respeita a largura da coluna e, em telas de até 480 px, os pares de campos ficam um embaixo do outro.
+- Fase 5: letras D e E dos quadros "Delegáveis/Elimináveis" desalinhadas; em telas de 320 px os quadros ficam empilhados.
+- Relatório na tela cabe inteiro em celulares baixos (ex.: iPhone SE).
+### Verificado
+- Fases 0–6 e relatório em perfis de iPhone SE, iPhone 12, iPhone 14 Pro Max, Galaxy S8, Galaxy S9+ e Pixel 5 (320 a 430 px): sem sobreposição nem rolagem lateral.
+
 ## [1.0.1] — 2026-10-10
 ### Alterado
 - Imagens de prévia do link (WhatsApp/redes) refeitas com a capa atual da Matriz FDEM (poste de direções) e as fontes da marca, para o hub e para o episódio. Novos arquivos `og-canetinha-v2.jpg` e `og-matrizfdem-v2.jpg` (nome novo força o WhatsApp a buscar a imagem nova).

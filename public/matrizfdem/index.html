@@ -115,7 +115,11 @@ textarea{resize:vertical;min-height:84px}
 input::placeholder,textarea::placeholder{color:var(--dim);font-weight:600}
 input:focus,textarea:focus{outline:none;border-color:var(--d);background:#100D26}
 input.filled,textarea.filled{border-color:var(--m-d)}
-input[type=date]{min-height:50px}
+input[type=date]{min-height:50px;display:block;-webkit-appearance:none;appearance:none;min-width:0;max-width:100%;text-align:left;line-height:1.25}
+input[type=date]::-webkit-date-and-time-value{text-align:left;margin:0}
+input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.7}
+input,textarea{min-width:0;max-width:100%}
+.fld{min-width:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font-size:13px;font-weight:800;padding:6px 12px;border-radius:99px;background:var(--surface2);color:var(--muted);border:none}
 .chip:hover{color:var(--fg)}
@@ -203,6 +207,9 @@ input[type=date]{min-height:50px}
 .mission-h .tag{font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .two>*{min-width:0}
+@media (max-width:480px){.two{grid-template-columns:1fr}}
+.split>*,.kpi>div{min-width:0}
+@media (max-width:350px){.split{grid-template-columns:1fr}}
 .mini{font-size:12px;font-weight:800;color:var(--dim);margin-bottom:-4px}
 
 /* recompensa */
@@ -214,7 +221,7 @@ input[type=date]{min-height:50px}
 .kpi{padding:12px;border-radius:14px;background:var(--surface2);display:flex;gap:10px;align-items:center}
 .kpi strong{font-family:var(--font-display);font-weight:400;font-size:18px;font-variant-numeric:tabular-nums}
 .kpi span{display:block;font-size:12px;color:var(--muted);font-weight:800}
-.kpi .bd{width:30px;height:30px;font-size:15px}
+.kpi .bd{display:inline-grid;width:30px;height:30px;font-size:15px;color:var(--ink)}
 
 /* troféu & boas-vindas */
 .hero{text-align:center;padding:12px 0 4px;display:grid;gap:12px;justify-items:center}
@@ -383,6 +390,13 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .rc-hint{font-size:12px;font-weight:700;color:var(--dim);text-align:center;max-width:430px}
 .rc-hint.err{color:var(--e)}
 .rc-ov.clean .rc-bar,.rc-ov.clean .rc-hint{display:none}
+@media (max-height:640px){
+  .rc{font-size:clamp(10px,1.62vh,13px);gap:5px;padding:10px 14px 14px}
+  .rc-hero{padding:6px 12px}
+  .rc-hero small{font-size:.8em}
+  .rc-hint{display:none}
+  .rc-bar .btn{padding:10px;font-size:13px}
+}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
