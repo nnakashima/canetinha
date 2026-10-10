@@ -6,8 +6,20 @@ Hub estilo streaming + episódios gamificados, com Google Analytics 4 (G-7SWLQJ3
 ## Estrutura
 - `server.js` — servidor Node sem dependências (porta `PORT`, health check em `/healthz`).
 - `public/index.html` — hub (vitrine).
-- `public/matriz-fdem/index.html` — episódio 01, Matriz FDEM.
+- `public/matrizfdem/index.html` — episódio 01, Matriz FDEM.
 - `public/assets/` — ícones e imagens de prévia do link (WhatsApp/redes).
+
+## Endereços dos episódios
+Cada episódio tem um endereço curto, sem acentos nem hífens (maiúsculas e barra final são redirecionadas):
+`/matrizfdem`, `/r5`, `/vendadecombo`, `/delivery`, `/contratarpessoas`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas`.
+- Episódio publicado: servido de `public/<slug>/index.html`.
+- Episódio "em breve": abre o hub com a ficha do episódio.
+- O servidor lê os slugs do catálogo do hub (`title:"…", slug:"…"` em `EPISODES`). Endereços antigos ficam em `LEGACY` no `server.js` (ex.: `/matriz-fdem` → `/matrizfdem`).
+
+## GA4
+Toda página envia `content_group` (`hub`, `episodio`, `episodio_em_breve`) e `episode_id` (o slug).
+No GA4: Relatórios → Engajamento → Páginas e telas (caminho da página) ou Grupo de conteúdo.
+Para filtrar eventos por episódio, registre `episode_id` como dimensão personalizada (escopo: evento) em Administrador → Definições personalizadas.
 
 ## Rodar local
 ```
@@ -27,5 +39,5 @@ Episódio (com `episode_id`): `episode_start`, `episode_resume`, `phase_complete
 
 ## Novo episódio
 1. Criar `public/<slug>/index.html` a partir do episódio Matriz FDEM.
-2. No hub (`public/index.html`), no objeto `EPISODES`: `status:"live"`, `url:"/<slug>"`, `store:"<chave localStorage>"`, `num`, textos.
+2. No hub (`public/index.html`), no objeto `EPISODES`: manter `slug`, mudar para `status:"live"`, `url:"/<slug>"`, `store:"<chave localStorage>"`, `num`, textos.
 3. Gerar `public/assets/og-<slug>.jpg` (1200×630) e publicar.

@@ -23,7 +23,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-7SWLQJ3ND5');
+  gtag('config', 'G-7SWLQJ3ND5', { content_group: '__CGROUP__', episode_id: '__EPISODE__' });
 </script>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Canetinha Mágica</title>
@@ -228,19 +228,19 @@ const LOGO_WORD = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgQAAACwCAYAAAB
 
 /* ---------- catálogo: para lançar um episódio, mude status para "live" e preencha url ---------- */
 const EPISODES = {
-  fdem:{ title:"Matriz FDEM", num:1, status:"live", isNew:true, url:"/matriz-fdem", store:"matriz-fdem-v1",
+  fdem:{ title:"Matriz FDEM", slug:"matrizfdem", num:1, status:"live", isNew:true, url:"/matrizfdem", store:"matriz-fdem-v1",
     subject:"Administração do Tempo", a:"var(--v)", b:"var(--d)", art:"scene:fdem",
     phases:"6 fases", time:"~15 min",
     desc:"Descubra para onde vão suas horas. Classifique cada atividade em Foco, Delegável, Eliminável ou Melhorável e resgate tempo para o que te leva ao seu objetivo.",
     gets:[["F","var(--f)","Diagnóstico F/D/E/M da sua rotina"],["D","var(--d)","Plano de ação com prazos e responsáveis"],["E","var(--e)","Horas por mês que você vai recuperar"],["M","var(--m)","Relatório na tela, PDF e resumo para o WhatsApp"]] },
-  r5:{ title:"R5", status:"soon", a:"var(--e)", b:"var(--f)", art:"scene:r5" },
-  combo:{ title:"Venda de Combo", status:"soon", a:"var(--f)", b:"var(--o)", art:"scene:combo" },
-  delivery:{ title:"Delivery", status:"soon", a:"var(--d)", b:"var(--m)", art:"scene:delivery" },
-  contratar:{ title:"Contratar Pessoas", status:"soon", a:"var(--m)", b:"var(--d)", art:"scene:contratar" },
-  lideranca:{ title:"Liderança", status:"soon", a:"var(--o)", b:"var(--e)", art:"scene:lideranca" },
-  financas:{ title:"Finanças Básico", status:"soon", a:"var(--m)", b:"var(--f)", art:"scene:financas" },
-  marketing:{ title:"Marketing Digital", status:"soon", a:"var(--d)", b:"var(--v)", art:"scene:marketing" },
-  teatro:{ title:"Teatro de Vendas", status:"soon", a:"var(--e)", b:"var(--v)", art:"scene:teatro" }
+  r5:{ title:"R5", slug:"r5", status:"soon", a:"var(--e)", b:"var(--f)", art:"scene:r5" },
+  combo:{ title:"Venda de Combo", slug:"vendadecombo", status:"soon", a:"var(--f)", b:"var(--o)", art:"scene:combo" },
+  delivery:{ title:"Delivery", slug:"delivery", status:"soon", a:"var(--d)", b:"var(--m)", art:"scene:delivery" },
+  contratar:{ title:"Contratar Pessoas", slug:"contratarpessoas", status:"soon", a:"var(--m)", b:"var(--d)", art:"scene:contratar" },
+  lideranca:{ title:"Liderança", slug:"lideranca", status:"soon", a:"var(--o)", b:"var(--e)", art:"scene:lideranca" },
+  financas:{ title:"Finanças Básico", slug:"financasbasico", status:"soon", a:"var(--m)", b:"var(--f)", art:"scene:financas" },
+  marketing:{ title:"Marketing Digital", slug:"marketingdigital", status:"soon", a:"var(--d)", b:"var(--v)", art:"scene:marketing" },
+  teatro:{ title:"Teatro de Vendas", slug:"teatrodevendas", status:"soon", a:"var(--e)", b:"var(--v)", art:"scene:teatro" }
 };
 const SHELVES = [
   { title:"Gestão", eps:["fdem","r5","combo","delivery","contratar","lideranca"] },
@@ -491,7 +491,7 @@ const SCENES = {
       <circle cx="133" cy="52" r="5" fill="#FFC93C"/>
       ${board(62, 1, "#FFC93C", "F", "Foco", -4, 0)}
       ${board(90, -1, "#3DD6F5", "D", "Delegar", 5, .7)}
-      ${board(118, 1, "#FF5C7A", "E", "Excluir", 8, 1.4)}
+      ${board(118, 1, "#FF5C7A", "E", "Eliminar", 8, 1.4)}
       ${board(146, -1, "#8BE36A", "M", "Melhorar", -6, 2.1)}
       <g transform="translate(26 92)"><circle r="11" fill="#fff"/><circle cx="7" cy="12" r="3" fill="#fff"/><circle cx="10" cy="18" r="1.8" fill="#fff"/>
         <text y="5" text-anchor="middle" font-family="Bungee,Arial Black,sans-serif" font-size="14" fill="${INK}">?</text>
@@ -618,20 +618,21 @@ function openSheet(id){
         <a class="btn" href="${ep.url}" data-play="${id}">${IC.play}${(()=>{const pr=progress(ep); return pr ? (pr.done?"Rever episódio":"Continuar episódio") : "Começar episódio";})()}</a>`
       :`
         <p>Este episódio está em produção e chega em breve à série Canetinha Mágica.</p>
-        <span class="btn soon" aria-disabled="true">Em breve!</span>`}
+        <span class="btn soon" aria-disabled="true">Em breve!</span>
+        <button class="btn ghost" data-act="close">Ver todos os episódios</button>`}
     </div></div>`;
   document.body.appendChild(ov);
   document.documentElement.style.overflow="hidden";
   SND.play(live?"open":"soon");
   setTimeout(()=>{ const b = ov.querySelector(".sheet-x"); if(b) b.focus({preventScroll:true}); }, 50);
 }
-function closeSheet(silent){ const o=$("#sheetOv"); if(o){ o.remove(); document.documentElement.style.overflow=""; if(!silent) SND.play("close"); } }
+function closeSheet(silent){ const o=$("#sheetOv"); if(o){ if(location.pathname!=="/") history.replaceState(null,"","/"); o.remove(); document.documentElement.style.overflow=""; if(!silent) SND.play("close"); } }
 
 document.addEventListener("click", e=>{
   if(e.target.id==="sheetOv"){ closeSheet(); return; }
-  const play = e.target.closest("[data-play]"); if(play){ SND.play("play"); track("episode_play",{episode:play.dataset.play}); return; }
+  const play = e.target.closest("[data-play]"); if(play){ SND.play("play"); track("episode_play",{episode:(EPISODES[play.dataset.play]||{}).slug||play.dataset.play}); return; }
   const b = e.target.closest("button"); if(!b) return;
-  if(b.dataset.ep){ openSheet(b.dataset.ep); track("episode_details",{episode:b.dataset.ep, status:EPISODES[b.dataset.ep].status}); return; }
+  if(b.dataset.ep){ openSheet(b.dataset.ep); track("episode_details",{episode:EPISODES[b.dataset.ep].slug, status:EPISODES[b.dataset.ep].status}); return; }
   if(b.dataset.scroll){ const [i,d] = b.dataset.scroll.split(":"); const r = $("#rail-"+i); r.scrollBy({left: +d * r.clientWidth * .85, behavior:"smooth"}); return; }
   const act = b.dataset.act;
   if(act==="close"){ closeSheet(); return; }
@@ -678,7 +679,13 @@ function splash(){
 }
 
 render();
-splash();
+const ROUTE = location.pathname.replace(/^\/+|\/+$/g,"").toLowerCase();
+const ROUTE_ID = ROUTE && Object.keys(EPISODES).find(k=>EPISODES[k].slug===ROUTE);
+if(ROUTE_ID){
+  try{ sessionStorage.setItem("cm-splash","1"); }catch(e){}
+  openSheet(ROUTE_ID);
+  track("episode_link_open",{episode:ROUTE, status:EPISODES[ROUTE_ID].status});
+} else { splash(); }
 addEventListener("pageshow", e=>{ if(e.persisted) render(); });
 })();
 </script>
