@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.0.3] — 2026-10-11
+### Alterado
+- Imagem de prévia do link da Matriz FDEM sem número de episódio: o selo agora diz só "CANETINHA MÁGICA · EPISÓDIO", porque a ordem de apresentação futura não terá este como o primeiro. Novo arquivo `og-matrizfdem-v3.jpg`.
+
 ## [1.0.2] — 2026-10-10
 ### Corrigido
 - Matriz FDEM, fases 4 e 5: no iPhone (Safari) o campo de data invadia o campo ao lado ("Até quando" / "Quem vai me cobrar"). O campo de data agora respeita a largura da coluna e, em telas de até 480 px, os pares de campos ficam um embaixo do outro.
