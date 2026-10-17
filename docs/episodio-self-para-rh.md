@@ -35,6 +35,9 @@ Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[hig
 
 Status: sempre "APTO" (o episódio não reprova ninguém). O elogio (`portrait().praise`) é calculado, mas não aparece em nenhum relatório.
 
+## Auto-retrato
+`analysis()` monta 2 parágrafos com frases fixas por resultado (`A_DISC`, `A_DISC2`, `A_IE`, `A_LC`, `A_MOT`, `A_MOT2`): 1º estilo + emoções; 2º locus + motivação + fechamento. Regras do texto: segunda pessoa, linguagem simples, sempre positivo e neutro, sem recomendação de carreira e sem comentar empresas. Os relatórios não mostram situações nem respostas da avaliação.
+
 ## Código para o RH (entrada do próximo episódio)
 `S4D1-<estilo>-<D><I><S><C>-<LC>-<IE>-<M1><M2>-<VAGA>-<V>`
 

@@ -504,6 +504,15 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .rf-q div.ok{background:var(--m);border-color:var(--m);color:var(--ink)}
 .rf-q span{display:block;font-size:.7em;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
 .rf-q b{font-family:var(--font-display);font-weight:400}
+.rf-p{margin:0;line-height:1.5;font-weight:600}
+.rf-k3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
+.rf-k3 div{padding:9px 10px;border-radius:12px;background:var(--surface);min-width:0}
+.rf-k3 span{display:block;font-size:.68em;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.rf-k3 b{display:block;font-family:var(--font-display);font-weight:400;font-size:1em;margin-top:2px;overflow-wrap:anywhere}
+.rf-k3 em{display:block;font-style:normal;font-size:.78em;font-weight:700;color:var(--muted)}
+.autor{display:grid;gap:8px;padding:16px;border-radius:18px;background:var(--bg);border:2px solid var(--line)}
+.autor .lab{font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--d)}
+.autor p{margin:0;font-size:15px;line-height:1.55;font-weight:600;color:var(--fg)}
 .rf-ans{margin:0;padding-left:1.4em;display:grid;gap:8px;font-size:.9em}
 .rf-ans span{display:block;color:var(--muted);font-weight:700}
 .rf-ans b{display:block;font-weight:800}
@@ -1384,6 +1393,39 @@ function portrait(){
     {k:"Estilo", v:q.disc, c:"f"}, {k:"Emoções", v:q.ie, c:"d"}, {k:"Motivação", v:q.mot, c:"m"},
     {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO", c:"ok"}]};
 }
+/* auto-retrato: 2 parágrafos em linguagem simples, sempre positivos e neutros (sem recomendação de carreira) */
+const A_DISC = {
+  D:"tem um jeito direto e prático de agir: gosta de resolver, decide com rapidez e mantém o foco no que precisa ser feito",
+  I:"tem um jeito comunicativo e animado: gosta de conversar, aproxima as pessoas e deixa o ambiente mais leve",
+  S:"tem um jeito calmo e constante: é parceiro, paciente e ajuda o time a manter o ritmo com tranquilidade",
+  C:"tem um jeito cuidadoso e organizado: presta atenção aos detalhes, segue o passo a passo e gosta de fazer tudo bem feito"};
+const A_DISC2 = {
+  D:"Também mostra iniciativa para tomar a frente quando é preciso.",
+  I:"Também mostra facilidade para se relacionar e puxar uma boa conversa.",
+  S:"Também mostra paciência e disposição para apoiar quem está ao lado.",
+  C:"Também mostra capricho e atenção à qualidade do que entrega."};
+const A_IE = {
+  Alta:"Nos momentos de pressão, você costuma manter a calma, entender o lado das outras pessoas e cuidar bem das próprias emoções.",
+  Moderada:"Nos momentos de pressão, você percebe o que sente e o que as pessoas ao redor sentem, e busca equilibrar as emoções com o que precisa ser feito.",
+  Baixa:"Nos momentos de pressão, você reage com autenticidade e sinceridade, mostrando com clareza o que sente."};
+const A_LC = {
+  Interno:"Você sente que os resultados dependem muito das suas atitudes, por isso costuma assumir responsabilidades e agir para fazer as coisas acontecerem.",
+  Misto:"Você enxerga que os resultados vêm tanto das suas atitudes quanto das circunstâncias, o que traz uma visão equilibrada e realista do dia a dia.",
+  Externo:"Você tem uma boa leitura do que acontece ao seu redor e se adapta com facilidade às circunstâncias de cada momento."};
+const A_MOT = {
+  THE:"O que mais te motiva é aprender: entender como as coisas funcionam e ganhar conhecimento novo.",
+  UTI:"O que mais te motiva é ver resultado: perceber que o seu esforço vira algo concreto.",
+  AES:"O que mais te motiva é a harmonia: um ambiente organizado, bonito e com clima bom.",
+  SOC:"O que mais te motiva é ajudar: fazer diferença para clientes e colegas.",
+  IND:"O que mais te motiva é crescer: ter autonomia e espaço para novos desafios.",
+  TRA:"O que mais te motiva é agir com valores: fazer o certo, com respeito e coerência."};
+const A_MOT2 = {THE:"aprender coisas novas", UTI:"ver resultados concretos", AES:"um ambiente harmonioso", SOC:"ajudar as pessoas", IND:"ter autonomia para crescer", TRA:"agir com coerência e respeito"};
+function analysis(){
+  const P = profile(); if(!P.p1) return [];
+  const p1 = `Você ${A_DISC[P.p1]}.${P.p2 ? " " + A_DISC2[P.p2] : ""} ${A_IE[P.ieCat]}`;
+  const p2 = `${A_LC[P.lcCat]} ${P.mot ? A_MOT[P.mot] : ""}${P.mot2 ? ` Você também valoriza ${A_MOT2[P.mot2]}.` : ""} Este é um retrato do seu jeito de ser hoje, feito a partir das suas próprias escolhas.`;
+  return [p1, p2.replace(/\s+/g," ").trim()];
+}
 function achievements(){
   const P = profile();
   return [
@@ -1410,6 +1452,7 @@ function summaryText(){
   L.push(`*Código para o RH:* ${selfCode()}`);
   L.push(`*Estilo:* ${"DISC".split("").map(k=>k+" "+P.pct[k]+"%").join(" · ")}`);
   L.push(`*Locus:* ${P.lcCat} · *Emoções (IE):* ${P.ieCat} · *Motivação:* ${P.mot?MOT[P.mot].name:"-"}${P.mot2?" e "+MOT[P.mot2].name:""}`, "");
+  { const A = analysis(); if(A.length){ L.push("*Auto-retrato:*", ...A.flatMap((x2,i)=>i?["",x2]:[x2]), ""); } }
   L.push("*Experiência:*"); if(S.exp.first) L.push("Primeiro emprego"); else S.exp.list.filter(expOk).forEach(r=>L.push(`${t(r.role)} na ${t(r.company)} (${tenure(r)})`)); L.push("");
   L.push("*Formação:*"); S.edu.list.filter(eduOk).forEach(r=>L.push(`${t(r.course)} · ${t(r.school)} (${t(r.year)})`));
   if(S.video) L.push("", "_Envio também um vídeo de apresentação._");
@@ -1437,6 +1480,7 @@ function screen6(){
     </div>
     <div class="codebox"><div class="lab">Código SELF</div><div class="hc">${esc(P.full)}</div><code id="selfCode">${esc(selfCode())}</code>
       <button class="btn ghost small" data-act="copycode">Copiar código para o RH</button></div>
+    <div class="autor"><div class="lab">Seu auto-retrato</div>${analysis().map(t2=>`<p>${esc(t2)}</p>`).join("")}</div>
     <p class="disc">Retrato do seu jeito de trabalhar hoje, a partir de ${NQ} situações. Não é nota, nem aprovação ou reprovação.</p>
     ${(()=>{ const R = portrait(); return R ? `<div class="badges">${R.cards.map(c=>`<div class="ach on q-${c.c} ${c.long?"long":""}">${c.c==="ok"?ICON.check:ICON.star}<span class="qk">${c.k}</span><span class="qv">${esc(c.v)}</span></div>`).join("")}</div>` : ""; })()}
     <div class="nps" id="nps">
@@ -1738,15 +1782,11 @@ function cardHTML(){
       <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>${esc(discLine(P))}<small>${esc(P.full)}</small></p></div>
       ${R?`<div class="rf-q">${[["Estilo",R.q.disc,"f"],["Emoções",R.q.ie,"d"],["Motivação",R.q.mot,"m"],["Locus",R.q.lc,"e"]].map(([k,v,c])=>`<div style="border-color:var(--${c})"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}<div class="ok"><span>Status</span><b>${R.status}</b></div></div>`:""}
       <div class="rf-l">Estilo (DISC)</div>
-      ${P.order.map(k=>bar(`${k} · ${DISC[k].name}`, DISC[k].nick, P.pct[k], `var(--${DISC[k].col})`)).join("")}
-      <div class="rf-l">Locus de controle e emoções</div>
-      ${bar(`Locus · ${P.lcCat}`, "quanto os resultados dependem de você", P.lc, "var(--e)")}
-      ${bar(`Inteligência emocional · ${P.ieCat}`, "como lida com as emoções", P.ie, "var(--d)")}
-      <div class="rf-l">Motivadores</div>
-      ${P.morder.map(k=>bar(MOT[k].name, MOT[k].long, P.mpct[k], "var(--m)")).join("")}
+      ${"DISC".split("").map(k=>bar(`${k} · ${DISC[k].name}`, DISC[k].nick, P.pct[k], `var(--${DISC[k].col})`)).join("")}
+      <div class="rf-k3"><div><span>Locus de controle</span><b>${P.lcCat}</b><em>${P.lc}/100</em></div><div><span>Inteligência emocional</span><b>${P.ieCat}</b><em>${P.ie}/100</em></div><div><span>Motivador principal</span><b>${P.mot?MOT[P.mot].name:"-"}</b><em>${P.mot?esc(MOT[P.mot].long.split(":")[0]):""}</em></div></div>
       <div class="rf-l">Código para o RH</div><div class="rc-code">${esc(selfCode())}</div>`)}
 
-    ${sec("Suas respostas", `<ol class="rf-ans">${QS.map((q,i)=>`<li><span>${esc(q.s)}</span><b>${S.ans[i]!==null&&S.ans[i]!==undefined?esc(q.o[S.ans[i]].t):"-"}</b></li>`).join("")}</ol>`)}
+    ${sec("Seu auto-retrato", analysis().map(t2=>`<p class="rf-p">${esc(t2)}</p>`).join(""))}
 
     ${sec("Experiência", S.exp.first ? row("Histórico","Primeiro emprego") : X.map(r=>row(esc(t(r.company)), esc(`${t(r.role)} · ${tenure(r)}`))).join("") || row("Histórico","-"))}
 
@@ -1887,13 +1927,9 @@ function buildPDF(){
     font("bold",7); color(RGB.muted); doc.text(T(l), kx+4, y+5.5, {charSpace:.3});
     font("bold",12); color(RGB.ink); doc.text(T(v), kx+4, y+11.5); font("normal",7.5); color(RGB.muted); doc.text(T(s), kx+4, y+15.5); });
   y += 24;
-  need(48);
-  doc.autoTable(Object.assign({}, tableBase, { startY:y,
-    head:[["#","Situação","Resposta escolhida"].map(T)],
-    body: QS.map((q,i)=>[String(i+1), T(q.s), T(S.ans[i]!==null ? q.o[S.ans[i]].t : "-")]),
-    styles:Object.assign({}, tableBase.styles, {fontSize:8.5, cellPadding:1.8}),
-    columnStyles:{0:{cellWidth:8,halign:"center"},1:{cellWidth:72}} }));
-  y = doc.lastAutoTable.finalY + 10;
+  // auto-retrato (sem perguntas e respostas da avaliação)
+  { const A = analysis(); if(A.length){ need(14); font("bold",7.5); color(RGB.muted); doc.text(T("AUTO-RETRATO"), M, y, {charSpace:.4}); y += 5;
+    A.forEach(par=>{ font("normal",10); color(RGB.ink); const ln = doc.splitTextToSize(T(par), CW); need(ln.length*4.8+3); doc.text(ln, M, y); y += ln.length*4.8 + 3; }); y += 5; } }
 
   // 3 experiência
   section(3, "Experiência");

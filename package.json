@@ -1,6 +1,6 @@
 {
   "name": "canetinha",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Canetinha Mágica — caixa de ferramentas da Consultoria Proselling",
   "private": true,
   "main": "server.js",

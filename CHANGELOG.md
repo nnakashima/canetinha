@@ -3,6 +3,12 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.9.0] — 2026-10-17
+### Alterado
+- SELF para RH: nenhum relatório (tela, PDF, WhatsApp e cópia de texto) mostra mais as situações e respostas da avaliação, para não expor o instrumento. O perfil aparece só como resumo: código, estilo DISC em barras, locus, emoções e motivador principal, qualidades, status e código para o RH.
+### Adicionado
+- "Seu auto-retrato": 2 parágrafos em linguagem simples, montados a partir das 4 dimensões (estilo DISC principal e secundário, emoções, locus, motivador principal e secundário). Tom sempre positivo e neutro, sem recomendação de carreira. Aparece no troféu, no relatório na tela, no PDF e no resumo do WhatsApp.
+
 ## [1.8.0] — 2026-10-17
 ### Corrigido
 - Microfone no iPhone/iPad (Matriz FDEM e SELF para RH): o reconhecimento de voz do Safari ficava gravando sem resultado e sem aviso. No iOS, o botão do microfone agora abre o teclado no campo e mostra no topo "Toque no microfone do teclado e fale" (ditado do teclado, que funciona sempre). Nos outros aparelhos, se o reconhecimento falhar em 8 s, aparece a folha "Fale pelo teclado" (antes podia não aparecer).
