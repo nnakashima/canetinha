@@ -329,6 +329,10 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .mic svg{width:18px;height:18px}
 .mic:hover{color:var(--fg)}
 .mic-wrap.ta .mic{top:8px;transform:none}
+.dict-hint{position:fixed;z-index:70;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);
+  display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--d);color:var(--ink);font-weight:800;font-size:14px;line-height:1.3;
+  box-shadow:0 5px 0 var(--d-d);animation:toastIn .3s cubic-bezier(.2,1.3,.4,1)}
+.dict-hint svg{flex:none;width:20px;height:20px}
 .mic.rec{background:var(--e);color:#fff;animation:micPulse 1s infinite}
 @keyframes micPulse{0%{box-shadow:0 0 0 0 rgba(255,92,122,.6)}100%{box-shadow:0 0 0 12px rgba(255,92,122,0)}}
 .sheet-ov{position:fixed;inset:0;z-index:88;background:rgba(10,8,25,.65);display:flex;align-items:flex-end;justify-content:center}
@@ -475,6 +479,34 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .rc-disc span{font-weight:900;font-size:.88em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .rc-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .rc-3>*{min-width:0}
+.rf-ov{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.rf-ov .rf-top{position:sticky;top:0;z-index:2;padding:4px 0 8px;background:var(--bg)}
+.rc.rf{flex:none;font-size:15px;gap:16px;padding:18px 16px 24px;cursor:default}
+.rc.rf .rc-v{max-height:none}
+.rc.rf .rc-hero .n{font-size:2.4em}
+.rf-who{display:flex;gap:14px;align-items:center}
+.rf-who img{width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid var(--f);flex:none}
+.rf-who b{display:block;font-size:1.25em;font-weight:900}
+.rf-who span{display:block;font-weight:800;color:var(--f)}
+.rf-who em{display:block;font-style:normal;font-size:.85em;font-weight:700;color:var(--muted)}
+.rf-sec{display:grid;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+.rf-h{font-family:var(--font-display);font-size:1.05em;color:var(--d)}
+.rf-l{font-size:.72em;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.rf-row{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.6fr);gap:10px;font-size:.92em}
+.rf-row span{color:var(--muted);font-weight:700;overflow-wrap:anywhere}
+.rf-row b{font-weight:800;overflow-wrap:anywhere}
+.rf-bar{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) 40px;gap:10px;align-items:center}
+.rf-bl b{display:block;font-weight:900;font-size:.9em}
+.rf-bl em{display:block;font-style:normal;font-size:.75em;color:var(--dim);font-weight:700}
+.rf-bar>span{font-family:var(--font-display);font-size:.9em;text-align:right}
+.rf-q{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.rf-q div{padding:8px 10px;border-radius:12px;background:var(--surface);border:2px solid var(--line)}
+.rf-q div.ok{background:var(--m);border-color:var(--m);color:var(--ink)}
+.rf-q span{display:block;font-size:.7em;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.75}
+.rf-q b{font-family:var(--font-display);font-weight:400}
+.rf-ans{margin:0;padding-left:1.4em;display:grid;gap:8px;font-size:.9em}
+.rf-ans span{display:block;color:var(--muted);font-weight:700}
+.rf-ans b{display:block;font-weight:800}
 .rank span#rankN{letter-spacing:.02em;color:var(--fg)}
 @media (max-width:360px){.rank span#rankN{letter-spacing:0;font-size:11px}.clock{font-size:12px;padding:6px 5px}.hud-row{gap:7px}}
 .barrow{display:flex;align-items:center;gap:8px;margin-top:5px}.barrow .bar{flex:1;margin-top:0}
@@ -1510,7 +1542,7 @@ function answer(k){
 
 document.addEventListener("click", e=>{
   const rcEl = e.target.closest("#rc");
-  if(rcEl && !e.target.closest("button")){ $("#rcOv").classList.toggle("clean"); return; }
+  if(rcEl && !rcEl.classList.contains("rf") && !e.target.closest("button")){ $("#rcOv").classList.toggle("clean"); return; }
   if(e.target.classList && e.target.classList.contains("sheet-ov")){ closeSheet(); return; }
   if(e.target.closest("#waBtn")) track("report_whatsapp");
   const b = e.target.closest("button"); if(!b) return;
@@ -1607,9 +1639,24 @@ function micDecorate(){
     b.setAttribute("aria-label", "Falar em vez de digitar"); b.innerHTML = ICON.mic; w.appendChild(b);
   });
 }
+/* iPhone/iPad: o reconhecimento de voz do Safari é instável; o ditado do teclado funciona sempre.
+   O toque no microfone abre o teclado no campo e mostra onde fica o microfone do teclado. */
+const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+let dictT;
+function iosDictate(el){
+  el.focus();
+  try{ const n = el.value.length; el.setSelectionRange(n, n); }catch(e){}
+  document.querySelectorAll(".dict-hint").forEach(x=>x.remove());
+  const d = document.createElement("div"); d.className = "dict-hint"; d.setAttribute("role","status");
+  d.innerHTML = `${ICON.mic}<span>Toque no <b>microfone do teclado</b>, no canto de baixo, e fale.</span>`;
+  document.body.appendChild(d); clearTimeout(dictT); dictT = setTimeout(()=>d.remove(), 5000);
+  el.addEventListener("blur", ()=>d.remove(), {once:true});
+  SND.play("click"); track("voice_input",{result:"ios_keyboard"});
+}
 function micStart(id){
   const el = document.getElementById(id); if(!el) return;
   if(rec){ try{ rec.stop(); }catch(e){} return; }
+  if(IS_IOS){ return iosDictate(el); }
   if(!SR || srBlocked){ return dictHelp(el, true); }
   let r; try{ r = new SR(); }catch(e){ srBlocked = true; return dictHelp(el, true); }
   r.lang = "pt-BR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
@@ -1623,7 +1670,7 @@ function micStart(id){
     if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){ srBlocked = true; if(!got) dictHelp(el, false); }
     else if(err === "no-speech") toast("Não ouvi nada. Toque no microfone e fale de novo.", true); };
   r.onend = () => { const was = !done; finish(); if(got && was){ SND.play("yes"); track("voice_input",{result:"speech"}); } };
-  setTimeout(()=>{ if(!done && !got){ try{ r.abort(); }catch(e){} finish(); srBlocked = true; if(document.activeElement===btn && document.body.contains(el) && !$("#rcOv")) dictHelp(el, false); } }, 8000);
+  setTimeout(()=>{ if(!done && !got){ try{ r.abort(); }catch(e){} finish(); srBlocked = true; if(document.body.contains(el) && !$("#rcOv") && !$("#sheetOv")) dictHelp(el, false); } }, 8000);
   try{ r.start(); rec = r; if(btn) btn.classList.add("rec"); SND.play("click"); }
   catch(e){ finish(); srBlocked = true; dictHelp(el, true); }
 }
@@ -1671,37 +1718,52 @@ async function shareVideo(){
 }
 /* ---------- relatório na tela ---------- */
 function cardHTML(){
-  const x = xp(), P = profile(), now = new Date(), pos = posOf(S.pos);
-  const ach = achievements().filter(a=>a.on).length;
+  const x = xp(), P = profile(), now = new Date(), pos = posOf(S.pos), R = portrait();
   const X = S.exp.list.filter(expOk), D = S.edu.list.filter(eduOk);
-  return `<div class="rc" id="rc">
+  const sec = (title, inner) => `<div class="rf-sec"><div class="rf-h">${title}</div>${inner}</div>`;
+  const row = (k, v) => v ? `<div class="rf-row"><span>${k}</span><b>${v}</b></div>` : "";
+  const bar = (label, sub, v, col) => `<div class="rf-bar"><div class="rf-bl"><b>${label}</b><em>${sub}</em></div><div class="mbar"><i style="width:${v}%;background:${col}"></i></div><span>${v}%</span></div>`;
+  return `<div class="rc rf" id="rc">
     <div class="rc-top"><div class="lg"><img src="${LOGO_MARK}" alt=""><img src="${LOGO_WORD}" alt="Proselling"></div>
       <div class="dt">${now.toLocaleDateString("pt-BR")}<br>${now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</div></div>
     <div class="rc-title"><div class="k">${PROGRAM} · ${HUD_TITLE}</div><h3>${EPISODE}</h3></div>
-    <div class="rc-who"><span class="nm">${S.photo?`<img class="ph" src="${S.photo}" alt="">`:""}<b>${esc(t(S.name)||"Participante")}</b></span><span class="rc-pill">${esc(pos?pos.title:"Vaga")}</span></div>
-    <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>Perfil SELF · ${esc(discLine(P))}<small>${(()=>{ const R = portrait(); return R ? esc(`${R.q.disc} · ${R.q.ie} · ${R.q.mot} · ${R.q.lc} · ${R.status}`) : ""; })()}</small></p></div>
-    <div class="rc-disc">${"DISC".split("").map(k=>`<div>${discB(k)}<span>${P.pct[k]}%</span></div>`).join("")}</div>
-    <div class="rc-3">
-      <div class="rc-sec"><div class="rc-l">Locus</div><div class="rc-v">${P.lcCat}</div></div>
-      <div class="rc-sec"><div class="rc-l">Emoções</div><div class="rc-v">${P.ieCat}</div></div>
-      <div class="rc-sec"><div class="rc-l">Motivação</div><div class="rc-v">${P.mot?MOT[P.mot].name:"-"}</div></div>
-    </div>
-    <div class="rc-sec"><div class="rc-l">Código SELF · ${esc(P.full)}</div><div class="rc-code">${esc(selfCode())}</div></div>
-    <div class="rc-sec"><div class="rc-l">Por que este time</div><div class="rc-v">${esc([...S.why.tags, t(S.why.text)].filter(Boolean).join(" · "))}</div></div>
-    <div class="rc-sec"><div class="rc-l">Experiência</div><div class="rc-v">${S.exp.first ? "Primeiro emprego" : esc(X.slice(0,2).map(r=>`${t(r.role)} · ${t(r.company)} (${tenure(r)})`).join(" | "))}</div></div>
-    <div class="rc-sec"><div class="rc-l">Formação</div><div class="rc-v">${esc(D.slice(0,2).map(r=>`${t(r.course)} · ${t(r.school)} (${t(r.year)})`).join(" | "))}</div></div>
-    <div class="rc-sec"><div class="rc-l">Contato</div><div class="rc-v">${esc([t(S.phone), t(S.email), t(S.city)].filter(Boolean).join(" · "))}</div></div>
-    ${S.nps!==null?`<div class="rc-sec"><div class="rc-l">Nota da experiência</div><div class="rc-v">${S.nps}/10${t(S.npsText)?" · "+esc(S.npsText):""}</div></div>`:""}
-    <div class="rc-foot"><span>Resultado orientativo · ${NQ} situações</span><span>proselling</span></div>
+    <div class="rf-who">${S.photo?`<img src="${S.photo}" alt="">`:""}<div><b>${esc(t(S.name)||"Participante")}</b><span>${esc(pos?pos.title:"")}</span><em>Nível ${levelOf(x)} · ${esc(rankOf(x))} · ${x} XP</em></div></div>
+
+    ${sec("Contato", row("WhatsApp", esc(t(S.phone))) + row("E-mail", esc(t(S.email))) + row("Endereço", esc(addrLine())) + row("Vídeo", S.video?"Gravado (compartilhe pelo botão do troféu)":""))}
+
+    ${sec("Vaga", row("Posição", esc(pos?pos.title:"-")) + row("Área", esc(pos?pos.tag:"")) +
+      row("Por que este time", esc(S.why.tags.join(" · "))) + row("Em suas palavras", esc(t(S.why.text))))}
+
+    ${sec("Perfil SELF", `
+      <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>${esc(discLine(P))}<small>${esc(P.full)}</small></p></div>
+      ${R?`<div class="rf-q">${[["Estilo",R.q.disc,"f"],["Emoções",R.q.ie,"d"],["Motivação",R.q.mot,"m"],["Locus",R.q.lc,"e"]].map(([k,v,c])=>`<div style="border-color:var(--${c})"><span>${k}</span><b>${esc(v)}</b></div>`).join("")}<div class="ok"><span>Status</span><b>${R.status}</b></div></div>`:""}
+      <div class="rf-l">Estilo (DISC)</div>
+      ${P.order.map(k=>bar(`${k} · ${DISC[k].name}`, DISC[k].nick, P.pct[k], `var(--${DISC[k].col})`)).join("")}
+      <div class="rf-l">Locus de controle e emoções</div>
+      ${bar(`Locus · ${P.lcCat}`, "quanto os resultados dependem de você", P.lc, "var(--e)")}
+      ${bar(`Inteligência emocional · ${P.ieCat}`, "como lida com as emoções", P.ie, "var(--d)")}
+      <div class="rf-l">Motivadores</div>
+      ${P.morder.map(k=>bar(MOT[k].name, MOT[k].long, P.mpct[k], "var(--m)")).join("")}
+      <div class="rf-l">Código para o RH</div><div class="rc-code">${esc(selfCode())}</div>`)}
+
+    ${sec("Suas respostas", `<ol class="rf-ans">${QS.map((q,i)=>`<li><span>${esc(q.s)}</span><b>${S.ans[i]!==null&&S.ans[i]!==undefined?esc(q.o[S.ans[i]].t):"-"}</b></li>`).join("")}</ol>`)}
+
+    ${sec("Experiência", S.exp.first ? row("Histórico","Primeiro emprego") : X.map(r=>row(esc(t(r.company)), esc(`${t(r.role)} · ${tenure(r)}`))).join("") || row("Histórico","-"))}
+
+    ${sec("Formação", D.map(r=>row(esc(t(r.school)), esc(`${t(r.course)} · ${t(r.year)}`))).join("") || row("Formação","-"))}
+
+    ${S.nps!==null?sec("Sua avaliação da experiência", row("Nota (0 a 10)", String(S.nps)) + row("Comentário", esc(t(S.npsText)))):""}
+
+    <div class="rc-foot"><span>Resultado orientativo · ${NQ} situações · não é nota nem aprovação</span><span>proselling</span></div>
     <div class="rc-strip"><i style="background:var(--f)"></i><i style="background:var(--d)"></i><i style="background:var(--e)"></i><i style="background:var(--m)"></i></div>
   </div>`;
 }
 function openCard(){
   closeCard();
-  const ov = document.createElement("div"); ov.className = "rc-ov"; ov.id = "rcOv"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-label","Relatório na tela");
-  ov.innerHTML = cardHTML() + `<div class="rc-bar"><button class="btn ghost" data-act="cardclose">‹ Voltar</button><button class="btn" data-act="cardsave">Salvar imagem</button></div>
-    <p class="rc-hint" id="rcHint">Tire um print agora: a tela já está no tamanho certo. Toque no cartão para esconder os botões.</p>`;
-  document.body.appendChild(ov); document.documentElement.style.overflow = "hidden";
+  const ov = document.createElement("div"); ov.className = "rc-ov rf-ov"; ov.id = "rcOv"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-label","Relatório na tela");
+  ov.innerHTML = `<div class="rc-bar rf-top"><button class="btn ghost" data-act="cardclose">‹ Voltar</button><button class="btn" data-act="cardsave">Salvar imagem</button></div>`
+    + cardHTML() + `<p class="rc-hint" id="rcHint">Role para ver tudo. "Salvar imagem" guarda o relatório inteiro.</p>`;
+  document.body.appendChild(ov); document.documentElement.style.overflow = "hidden"; ov.scrollTop = 0;
   SND.play("D");
 }
 function closeCard(){ const o = $("#rcOv"); if(o){ o.remove(); document.documentElement.style.overflow = ""; } }
@@ -1712,7 +1774,10 @@ async function saveCardImage(){
   say("Gerando imagem…");
   try{
     const bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim() || "#15122E";
-    const canvas = await window.html2canvas(node, {scale: Math.max(2, devicePixelRatio||1), backgroundColor: bg, logging:false});
+    // copia o relatório inteiro para fora da área com rolagem, para a imagem sair completa
+    const wrap = document.createElement("div"); wrap.style.cssText = `position:absolute;left:-10000px;top:0;width:${node.offsetWidth}px`;
+    const clone = node.cloneNode(true); clone.removeAttribute("id"); wrap.appendChild(clone); document.body.appendChild(wrap);
+    let canvas; try{ canvas = await window.html2canvas(clone, {scale: 2, backgroundColor: bg, logging:false, windowWidth: document.documentElement.clientWidth, height: clone.scrollHeight}); } finally { wrap.remove(); }
     const blob = await new Promise(r=>canvas.toBlob(r, "image/png"));
 
     const slug = (t(S.name)||"participante").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");

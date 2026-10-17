@@ -3,6 +3,12 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.8.0] — 2026-10-17
+### Corrigido
+- Microfone no iPhone/iPad (Matriz FDEM e SELF para RH): o reconhecimento de voz do Safari ficava gravando sem resultado e sem aviso. No iOS, o botão do microfone agora abre o teclado no campo e mostra no topo "Toque no microfone do teclado e fale" (ditado do teclado, que funciona sempre). Nos outros aparelhos, se o reconhecimento falhar em 8 s, aparece a folha "Fale pelo teclado" (antes podia não aparecer).
+### Alterado
+- SELF para RH, "Relatório na tela": agora é o relatório completo, com rolagem: contato e endereço, vaga e motivos, perfil SELF (qualidades, status, barras de DISC, locus, IE e os 6 motivadores, código para o RH), as 13 respostas, experiência, formação e a avaliação NPS. "Salvar imagem" gera a imagem do relatório inteiro.
+
 ## [1.7.1] — 2026-10-17
 ### Alterado
 - SELF para RH: o elogio saiu também do resumo do WhatsApp e do PDF. Ficam as 4 qualidades e o status.

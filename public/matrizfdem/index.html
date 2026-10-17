@@ -320,6 +320,10 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .mic svg{width:18px;height:18px}
 .mic:hover{color:var(--fg)}
 .mic-wrap.ta .mic{top:8px;transform:none}
+.dict-hint{position:fixed;z-index:70;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);
+  display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;background:var(--d);color:var(--ink);font-weight:800;font-size:14px;line-height:1.3;
+  box-shadow:0 5px 0 var(--d-d);animation:toastIn .3s cubic-bezier(.2,1.3,.4,1)}
+.dict-hint svg{flex:none;width:20px;height:20px}
 .mic.rec{background:var(--e);color:#fff;animation:micPulse 1s infinite}
 @keyframes micPulse{0%{box-shadow:0 0 0 0 rgba(255,92,122,.6)}100%{box-shadow:0 0 0 12px rgba(255,92,122,0)}}
 .sheet-ov{position:fixed;inset:0;z-index:88;background:rgba(10,8,25,.65);display:flex;align-items:flex-end;justify-content:center}
@@ -1046,9 +1050,24 @@ function micDecorate(){
     b.setAttribute("aria-label", "Falar em vez de digitar"); b.innerHTML = ICON.mic; w.appendChild(b);
   });
 }
+/* iPhone/iPad: o reconhecimento de voz do Safari é instável; o ditado do teclado funciona sempre.
+   O toque no microfone abre o teclado no campo e mostra onde fica o microfone do teclado. */
+const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+let dictT;
+function iosDictate(el){
+  el.focus();
+  try{ const n = el.value.length; el.setSelectionRange(n, n); }catch(e){}
+  document.querySelectorAll(".dict-hint").forEach(x=>x.remove());
+  const d = document.createElement("div"); d.className = "dict-hint"; d.setAttribute("role","status");
+  d.innerHTML = `${ICON.mic}<span>Toque no <b>microfone do teclado</b>, no canto de baixo, e fale.</span>`;
+  document.body.appendChild(d); clearTimeout(dictT); dictT = setTimeout(()=>d.remove(), 5000);
+  el.addEventListener("blur", ()=>d.remove(), {once:true});
+  SND.play("click"); track("voice_input",{result:"ios_keyboard"});
+}
 function micStart(id){
   const el = document.getElementById(id); if(!el) return;
   if(rec){ try{ rec.stop(); }catch(e){} return; }
+  if(IS_IOS){ return iosDictate(el); }
   if(!SR || srBlocked){ return dictHelp(el, true); }
   let r; try{ r = new SR(); }catch(e){ srBlocked = true; return dictHelp(el, true); }
   r.lang = "pt-BR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
@@ -1062,7 +1081,7 @@ function micStart(id){
     if(["not-allowed","service-not-allowed","audio-capture","network"].includes(err)){ srBlocked = true; if(!got) dictHelp(el, false); }
     else if(err === "no-speech") toast("Não ouvi nada. Toque no microfone e fale de novo.", true); };
   r.onend = () => { const was = !done; finish(); if(got && was){ SND.play("yes"); track("voice_input",{result:"speech"}); } };
-  setTimeout(()=>{ if(!done && !got){ try{ r.abort(); }catch(e){} finish(); srBlocked = true; if(document.activeElement===btn && document.body.contains(el) && !$("#rcOv")) dictHelp(el, false); } }, 8000);
+  setTimeout(()=>{ if(!done && !got){ try{ r.abort(); }catch(e){} finish(); srBlocked = true; if(document.body.contains(el) && !$("#rcOv") && !$("#sheetOv")) dictHelp(el, false); } }, 8000);
   try{ r.start(); rec = r; if(btn) btn.classList.add("rec"); SND.play("click"); }
   catch(e){ finish(); srBlocked = true; dictHelp(el, true); }
 }

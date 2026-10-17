@@ -5,7 +5,7 @@
 Série de mini web apps gamificados ("episódios"), pensados para o celular e divulgados por link no WhatsApp. Um hub no estilo streaming reúne os episódios em prateleiras.
 
 - **Produção:** https://canetinha.metamode.com.br
-- **Versão atual:** 1.7.1 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
+- **Versão atual:** 1.8.0 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
 - **Repositório:** github.com/nnakashima/canetinha → deploy automático no Railway a cada push em `main`
 
 | Endereço | O que abre |
