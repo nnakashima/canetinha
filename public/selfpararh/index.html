@@ -1374,7 +1374,7 @@ function summaryText(){
   L.push("*Por que este time:* "+[...S.why.tags, t(S.why.text)].filter(Boolean).join(" · "), "");
   L.push(`*Perfil SELF:* ${P.code} (${discLine(P)})`);
   L.push(`*Código SELF:* ${P.full}`);
-  { const R = portrait(); if(R){ L.push(`*Qualidades:* ${R.q.disc} · ${R.q.ie} · ${R.q.mot} · ${R.q.lc}`); L.push(`*Elogio:* ${R.praise}`); L.push(`*Status:* ${R.status}`); } }
+  { const R = portrait(); if(R){ L.push(`*Qualidades:* ${R.q.disc} · ${R.q.ie} · ${R.q.mot} · ${R.q.lc}`); L.push(`*Status:* ${R.status}`); } }
   L.push(`*Código para o RH:* ${selfCode()}`);
   L.push(`*Estilo:* ${"DISC".split("").map(k=>k+" "+P.pct[k]+"%").join(" · ")}`);
   L.push(`*Locus:* ${P.lcCat} · *Emoções (IE):* ${P.ieCat} · *Motivação:* ${P.mot?MOT[P.mot].name:"-"}${P.mot2?" e "+MOT[P.mot2].name:""}`, "");
@@ -1776,7 +1776,7 @@ function buildPDF(){
   { const R = portrait(); if(R){ const items = [[R.q.disc,RGB.F],[R.q.ie,RGB.D],[R.q.mot,RGB.M],[R.q.lc,RGB.E],["STATUS: APTO",[46,160,90]]];
     items.forEach(([txt0,col],i)=>{ const txt = T(String(txt0).toUpperCase()); const w = doc.getTextWidth(txt)+7;
       fill(i===4?col:RGB.soft); draw(col); doc.setLineWidth(.4); doc.roundedRect(ax,y,w,6,3,3,"FD"); color(i===4?RGB.white:RGB.ink); doc.text(txt, ax+w/2, y+4.1, {align:"center"}); ax += w + 2; });
-    y += 9; font("italic",9); color(RGB.muted); doc.text(T("Elogio: "+R.praise), M, y+1.5); } }
+    y += 2; } }
   y += 14;
 
   const section = (n, title) => { need(16); fill(RGB.navy); doc.roundedRect(M,y-4.6,6.5,6.5,1.6,1.6,"F"); font("bold",8.5); color(RGB.white); doc.text(String(n), M+3.25, y, {align:"center"});

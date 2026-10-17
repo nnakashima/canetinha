@@ -33,7 +33,7 @@ Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[hig
 | Motivação | THE Curioso · UTI Realizador · AES Harmonioso · SOC Prestativo · IND Ambicioso · TRA Confiável |
 | Locus | Interno Protagonista · Misto Realista · Externo Adaptável |
 
-Elogio: `<Estilo> e <locus>, movido a <motivador> com <emoções>.` Status: sempre "APTO" (o episódio não reprova ninguém).
+Status: sempre "APTO" (o episódio não reprova ninguém). O elogio (`portrait().praise`) é calculado, mas não aparece em nenhum relatório.
 
 ## Código para o RH (entrada do próximo episódio)
 `S4D1-<estilo>-<D><I><S><C>-<LC>-<IE>-<M1><M2>-<VAGA>-<V>`

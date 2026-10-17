@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.7.1] — 2026-10-17
+### Alterado
+- SELF para RH: o elogio saiu também do resumo do WhatsApp e do PDF. Ficam as 4 qualidades e o status.
+
 ## [1.7.0] — 2026-10-17
 ### Alterado
 - SELF para RH, troféu: saiu o card "Elogio" (o retrato fica com Estilo, Emoções, Motivação, Locus e Status). O elogio continua no resumo e no PDF.
