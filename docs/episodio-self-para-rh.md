@@ -44,5 +44,8 @@ Para validar: recalcular o verificador e comparar; separar por `-`.
 ## Analytics (GA4)
 Eventos: `episode_start`, `position_selected` (position), `question_answered` (question), `phase_complete`, `trophy_reached` (position), `report_pdf`, `report_image`, `report_whatsapp`, `report_copy`, `voice_input`. `media_added` (type), `report_video`. Nenhum dado pessoal nem resposta vai para o GA4.
 
+## Câmera
+`openCam("photo"|"video")` usa `getUserMedia` (câmera frontal, com botão para virar) e `MediaRecorder` (mp4 quando o navegador aceita, senão webm), limite de 30 s. Sem suporte ou sem permissão, cai no seletor de arquivo. Arquivos também podem ser enviados pelos chips "Foto" e "Vídeo".
+
 ## Dados pessoais
 Ficam só no aparelho: textos e foto no `localStorage` (`selfpararh-v1`), vídeo no IndexedDB (`selfpararh`). "Recomeçar do zero" apaga tudo. A foto entra no PDF e no cartão; o vídeo é compartilhado à parte pelo botão do troféu.

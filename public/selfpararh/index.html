@@ -491,6 +491,25 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .prev video{width:96px;height:128px;border-radius:12px;object-fit:cover;background:#000;flex:none}
 .prev .pi{flex:1;min-width:0;display:grid;gap:6px;font-weight:800;font-size:14px}
 .prev .pi small{color:var(--muted);font-weight:700;font-size:12px}
+.upl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--dim)}
+.upl .chip{position:relative;display:inline-flex;align-items:center;gap:6px;cursor:pointer;color:var(--fg)}
+.upl .chip svg{width:15px;height:15px}
+.cam-ov{position:fixed;inset:0;z-index:95;background:#0B0920;display:flex;align-items:center;justify-content:center;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))}
+.cam{width:100%;max-width:520px;display:grid;gap:12px}
+.cam-v{position:relative;width:100%;max-width:min(100%,60vh);margin:0 auto;aspect-ratio:1;border-radius:22px;overflow:hidden;background:#000;border:2px solid var(--line)}
+.cam-v video{width:100%;height:100%;object-fit:cover;display:block}
+.cam-v video.mirror{transform:scaleX(-1)}
+.cam-frame{position:absolute;inset:14%;border-radius:50%;border:2px dashed rgba(255,255,255,.35);pointer-events:none}
+.cam-rec{position:absolute;top:12px;left:12px;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:99px;background:rgba(0,0,0,.55);font-weight:900;font-size:13px;font-variant-numeric:tabular-nums}
+.cam-rec i{width:10px;height:10px;border-radius:50%;background:var(--e);animation:micPulse 1s infinite}
+.cam-st{text-align:center;color:var(--muted);font-weight:700;font-size:14px;min-height:2.6em}
+.cam-st.err{color:var(--f)}
+.cam-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.cam-shot{width:76px;height:76px;border-radius:50%;border:5px solid #fff;background:transparent;padding:0;display:grid;place-items:center}
+.cam-shot i{width:56px;height:56px;border-radius:50%;background:#fff;transition:all .2s}
+.cam-shot.video i{background:var(--e)}
+.cam-shot.on i{width:28px;height:28px;border-radius:8px}
+.cam-shot:disabled{opacity:.4}
 .cepst{font-size:12.5px;font-weight:800;color:var(--dim);margin-top:-6px}
 .cepst.ok{color:var(--m)} .cepst.err{color:var(--f)}
 .avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid var(--f);box-shadow:0 5px 0 var(--f-d)}
@@ -1163,8 +1182,12 @@ function screen5(){
       <h3>Foto ou vídeo de apresentação <em style="font-family:var(--font-body);font-style:normal;font-size:13px;color:var(--dim)">(opcional)</em></h3>
       <p class="hint">Use a câmera da frente. No vídeo, conte em até 30 segundos quem você é e por que quer jogar no time.</p>
       <div class="mbtns">
-        <label class="btn ghost small">${ICAM}<span>${S.photo?"Trocar foto":"Tirar foto"}</span><input type="file" accept="image/*" capture="user" data-media="photo"></label>
-        <label class="btn ghost small">${IVID}<span>${v?"Regravar":"Gravar vídeo"}</span><input type="file" accept="video/*" capture="user" data-media="video"></label>
+        <button class="btn ghost small" data-act="camphoto">${ICAM}<span>${S.photo?"Tirar outra":"Tirar foto"}</span></button>
+        <button class="btn ghost small" data-act="camvideo">${IVID}<span>${v?"Regravar":"Gravar vídeo"}</span></button>
+      </div>
+      <div class="upl"><span>ou envie um arquivo:</span>
+        <label class="chip">${ICAM}Foto<input type="file" accept="image/*" data-media="photo" id="upPhoto"></label>
+        <label class="chip">${IVID}Vídeo<input type="file" accept="video/*" data-media="video" id="upVideo"></label>
       </div>
       ${S.photo?`<div class="prev"><img src="${S.photo}" alt="Sua foto"><div class="pi">Foto pronta<small>Entra no relatório e no PDF.</small></div><button class="x" data-act="rmphoto" aria-label="Remover foto">${ICON.x}</button></div>`:""}
       ${v?`<div class="prev">${VIDEO.url?`<video src="${VIDEO.url}" playsinline controls muted></video>`:""}<div class="pi">Vídeo gravado<small>${mb(v.size)}${v.dur?" · "+Math.round(v.dur)+"s":""}. Você envia o vídeo junto com o PDF no troféu.</small></div><button class="x" data-act="rmvideo" aria-label="Remover vídeo">${ICON.x}</button></div>`:""}
@@ -1186,9 +1209,12 @@ const VDB = {
 function setVideo(blob){ if(VIDEO.url) URL.revokeObjectURL(VIDEO.url); VIDEO.blob = blob; VIDEO.url = blob ? URL.createObjectURL(blob) : null; }
 (async()=>{ if(!S.video) return; try{ const b = await VDB.get(); if(b){ setVideo(b); if(S.step===5) render(); } else { S.video = null; save(); } }catch(e){} })();
 async function onMedia(input){
-  const f = input.files && input.files[0]; if(!f) return;
+  const f = input.files && input.files[0]; input.value = ""; if(!f) return;
+  return addMedia(input.dataset.media, f, 0, "file");
+}
+async function addMedia(kind, f, knownDur, how){
   const wasDone = doneSnapshot[5];
-  if(input.dataset.media==="photo"){
+  if(kind==="photo"){
     try{
       const url = URL.createObjectURL(f); const img = new Image();
       await new Promise((ok,ko)=>{ img.onload = ok; img.onerror = ko; img.src = url; });
@@ -1196,17 +1222,84 @@ async function onMedia(input){
       const c = document.createElement("canvas"); c.width = c.height = sz;
       c.getContext("2d").drawImage(img, (img.naturalWidth-side)/2, (img.naturalHeight-side)/2, side, side, 0, 0, sz, sz);
       URL.revokeObjectURL(url);
-      S.photo = c.toDataURL("image/jpeg", .82); save(); SND.play("F"); burst(40); track("media_added",{type:"photo"});
-    }catch(e){ toast("Não consegui ler a foto. Tente de novo.", true); }
+      S.photo = c.toDataURL("image/jpeg", .82); save(); SND.play("F"); burst(40); track("media_added",{type:"photo", source:how});
+    }catch(e){ toast("Não consegui ler a foto. Tente de novo.", true); return; }
   } else {
-    if(f.size > 80*1048576){ toast("Vídeo muito grande. Grave até uns 30 segundos.", true); input.value = ""; return; }
-    let dur = 0; try{ const u = URL.createObjectURL(f), el = document.createElement("video"); el.preload = "metadata"; el.src = u;
-      await new Promise(ok=>{ el.onloadedmetadata = ok; el.onerror = ok; setTimeout(ok, 3000); }); dur = isFinite(el.duration) ? el.duration : 0; URL.revokeObjectURL(u); }catch(e){}
+    if(f.size > 80*1048576){ toast("Vídeo muito grande. Grave até uns 30 segundos.", true); return; }
+    let dur = knownDur || 0;
+    if(!dur){ try{ const u = URL.createObjectURL(f), el = document.createElement("video"); el.preload = "metadata"; el.src = u;
+      await new Promise(ok=>{ el.onloadedmetadata = ok; el.onerror = ok; setTimeout(ok, 3000); }); dur = isFinite(el.duration) ? el.duration : 0; URL.revokeObjectURL(u); }catch(e){} }
     setVideo(f); S.video = {size:f.size, type:f.type||"video/mp4", dur}; save();
     try{ await VDB.put(f); }catch(e){ toast("O vídeo fica disponível só até fechar esta página.", true); }
-    SND.play("F"); burst(40); track("media_added",{type:"video"});
+    SND.play("F"); burst(40); track("media_added",{type:"video", source:how});
   }
   render(); checkPhaseDone(wasDone);
+}
+/* câmera na própria página: funciona no celular e no computador */
+const CAM = {stream:null, rec:null, chunks:[], t0:0, timer:null, facing:"user", mode:"photo"};
+const MAXSEC = 30;
+function camFallback(mode){ const el = document.getElementById(mode==="photo"?"upPhoto":"upVideo"); if(el){ el.setAttribute("capture","user"); el.click(); setTimeout(()=>el.removeAttribute("capture"), 500); } }
+async function openCam(mode){
+  CAM.mode = mode;
+  if(!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) || (mode==="video" && !window.MediaRecorder)){ return camFallback(mode); }
+  closeCam();
+  const ov = document.createElement("div"); ov.className = "cam-ov"; ov.id = "camOv"; ov.setAttribute("role","dialog"); ov.setAttribute("aria-label", mode==="photo"?"Tirar foto":"Gravar vídeo");
+  ov.innerHTML = `<div class="cam">
+    <div class="cam-v"><video id="camV" autoplay playsinline muted></video><div class="cam-frame"></div><div class="cam-rec" id="camRec" hidden><i></i><span id="camT">0s</span> / ${MAXSEC}s</div></div>
+    <p class="cam-st" id="camSt">Abrindo a câmera…</p>
+    <div class="cam-bar">
+      <button class="btn ghost small" data-act="camclose">Fechar</button>
+      <button class="cam-shot ${mode}" id="camShot" data-act="camshot" aria-label="${mode==="photo"?"Tirar foto":"Gravar"}" disabled><i></i></button>
+      <button class="btn ghost small" data-act="camflip">Virar</button>
+    </div></div>`;
+  document.body.appendChild(ov); document.documentElement.style.overflow = "hidden";
+  await camStart();
+}
+async function camStart(){
+  const st = $("#camSt"), v = $("#camV");
+  if(CAM.stream){ CAM.stream.getTracks().forEach(t=>t.stop()); CAM.stream = null; }
+  try{
+    CAM.stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:CAM.facing, width:{ideal:720}, height:{ideal:720}}, audio: CAM.mode==="video"});
+    if(!$("#camOv")){ CAM.stream.getTracks().forEach(t=>t.stop()); CAM.stream = null; return; }
+    v.srcObject = CAM.stream; v.classList.toggle("mirror", CAM.facing==="user");
+    $("#camShot").disabled = false;
+    st.textContent = CAM.mode==="photo" ? "Enquadre o rosto e toque no botão." : `Toque no botão para gravar até ${MAXSEC} segundos. Conte quem você é e por que quer jogar no time.`;
+  }catch(e){
+    const n = e && e.name;
+    st.textContent = n==="NotAllowedError" ? "Sem permissão para usar a câmera. Libere o acesso no navegador ou envie um arquivo." : "Não encontrei uma câmera disponível. Você pode enviar um arquivo.";
+    st.classList.add("err");
+    const b = $("#camShot"); if(b){ b.outerHTML = `<button class="btn small" data-act="camfile">Enviar arquivo</button>`; }
+    track("camera_error",{error:n||"unknown"});
+  }
+}
+function closeCam(){
+  if(CAM.rec && CAM.rec.state!=="inactive"){ CAM.rec.onstop = null; try{ CAM.rec.stop(); }catch(e){} }
+  CAM.rec = null; clearInterval(CAM.timer);
+  if(CAM.stream){ CAM.stream.getTracks().forEach(t=>t.stop()); CAM.stream = null; }
+  const o = $("#camOv"); if(o){ o.remove(); document.documentElement.style.overflow = ""; }
+}
+function camShot(){
+  const v = $("#camV"); if(!v || !CAM.stream) return;
+  if(CAM.mode==="photo"){
+    const w = v.videoWidth, h = v.videoHeight; if(!w) return;
+    const side = Math.min(w,h), c = document.createElement("canvas"); c.width = c.height = Math.min(720, side);
+    const g = c.getContext("2d"); if(CAM.facing==="user"){ g.translate(c.width,0); g.scale(-1,1); }
+    g.drawImage(v, (w-side)/2, (h-side)/2, side, side, 0, 0, c.width, c.height);
+    SND.play("click");
+    c.toBlob(b=>{ closeCam(); if(b) addMedia("photo", b, 0, "camera"); }, "image/jpeg", .9);
+    return;
+  }
+  if(CAM.rec && CAM.rec.state==="recording"){ CAM.rec.stop(); return; }
+  const types = ["video/mp4;codecs=avc1,mp4a","video/mp4","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  const type = types.find(t=>{ try{ return MediaRecorder.isTypeSupported(t); }catch(e){ return false; } }) || "";
+  let rec; try{ rec = new MediaRecorder(CAM.stream, type ? {mimeType:type, videoBitsPerSecond:1200000} : undefined); }catch(e){ toast("Este navegador não grava vídeo. Envie um arquivo.", true); return; }
+  CAM.rec = rec; CAM.chunks = [];
+  rec.ondataavailable = e=>{ if(e.data && e.data.size) CAM.chunks.push(e.data); };
+  rec.onstop = ()=>{ const dur = (Date.now()-CAM.t0)/1000; const blob = new Blob(CAM.chunks, {type: rec.mimeType || type || "video/webm"}); closeCam(); if(blob.size) addMedia("video", blob, dur, "camera"); };
+  rec.start(500); CAM.t0 = Date.now(); SND.play("click");
+  $("#camShot").classList.add("on"); $("#camRec").hidden = false; $("#camSt").textContent = "Gravando… toque de novo para parar.";
+  const flip = document.querySelector("[data-act=camflip]"); if(flip) flip.disabled = true;
+  CAM.timer = setInterval(()=>{ const s2 = Math.floor((Date.now()-CAM.t0)/1000); const el = $("#camT"); if(el) el.textContent = s2+"s"; if(s2 >= MAXSEC && rec.state==="recording") rec.stop(); }, 250);
 }
 document.addEventListener("change", e=>{ const el = e.target; if(el && el.dataset && el.dataset.media) onMedia(el); });
 let cepLast = "";
@@ -1399,6 +1492,12 @@ document.addEventListener("click", e=>{
   if(act==="back") return go(S.step-1);
   if(act==="copycode"){ const c = selfCode(); track("code_copy");
     try{ navigator.clipboard.writeText(c).then(()=>toast("Código copiado"), ()=>toast("Toque e segure o código para copiar", true)); }catch(err){ toast("Toque e segure o código para copiar", true); } return; }
+  if(act==="camphoto"){ openCam("photo"); return; }
+  if(act==="camvideo"){ openCam("video"); return; }
+  if(act==="camclose"){ closeCam(); return; }
+  if(act==="camshot"){ camShot(); return; }
+  if(act==="camflip"){ CAM.facing = CAM.facing==="user" ? "environment" : "user"; camStart(); return; }
+  if(act==="camfile"){ const m = CAM.mode; closeCam(); const el = document.getElementById(m==="photo"?"upPhoto":"upVideo"); if(el) el.click(); return; }
   if(act==="consent"){ const wasDone = doneSnapshot[5]; S.consent = !S.consent; save(); SND.play(S.consent?"yes":"click"); b.classList.toggle("on", S.consent); b.setAttribute("aria-pressed", S.consent); hud(); checkPhaseDone(wasDone); return; }
   if(act==="rmphoto"){ S.photo = ""; save(); render(); return; }
   if(act==="rmvideo"){ S.video = null; setVideo(null); save(); try{ VDB.del(); }catch(e){} render(); return; }
@@ -1579,7 +1678,7 @@ async function saveCardImage(){
     else say("Não foi possível salvar a imagem. Tire um print da tela.", true);
   }
 }
-document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeCard(); closeSheet(); } });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeCard(); closeSheet(); closeCam(); } });
 /* ---------- PDF ---------- */
 const RGB = {navy:[21,18,46], surface:[34,29,74], ink:[26,20,51], muted:[104,98,140], line:[226,223,240], soft:[246,245,251],
   F:[255,201,60], D:[61,214,245], E:[255,92,122], M:[139,227,106], cyan:[61,214,245], white:[255,255,255]};
