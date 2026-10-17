@@ -1381,7 +1381,7 @@ function screen6(){
         ${S.video?`<button class="opt" data-act="video"><span class="oi" style="background:var(--e)">${IVID}</span><span><b>Vídeo de apresentação</b><span class="od">Salve ou compartilhe o vídeo para anexar na conversa com o RH.</span></span></button>`:""}
       </div>
       <button class="btn ghost wide small" data-act="copy">Copiar resumo em texto</button>
-      <p class="status" id="pdfStatus">Seus dados ficam só neste celular. Você decide se e com quem compartilhar.</p>
+      <p class="status" id="pdfStatus">No celular, os arquivos abrem as opções de compartilhar (WhatsApp, e-mail ou "Salvar em Arquivos"). No computador, vão para a pasta de downloads. Seus dados ficam só neste aparelho.</p>
     </div>
     ${showCopy?`<textarea class="copyarea" id="copyTxt" readonly aria-label="Resumo">${esc(summaryText())}</textarea><p class="hint">Selecione o texto acima e copie.</p>`:""}
     <div class="nav" style="margin-top:4px">
@@ -1602,7 +1602,9 @@ function closeSheet(){ const o = $("#sheetOv"); if(o) o.remove(); }
 async function saveFile(blob, filename, title){
   try{
     const file = new File([blob], filename, {type: blob.type});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
+    // celular/tablet: abre o compartilhar (WhatsApp, e-mail, "Salvar em Arquivos"); computador: baixa direto
+    const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+    if(mobile && navigator.canShare && navigator.canShare({files:[file]})){
       try{ await navigator.share({files:[file], title: title || filename}); return "shared"; }
       catch(err){ if(err && err.name==="AbortError") return "cancel"; }
     }
@@ -1826,7 +1828,7 @@ async function exportPDF(){
     const d = new Date(), stamp = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     const r = await saveFile(blob, `Canetinha-Magica-SELF-para-RH-${slug}-${stamp}.pdf`, "Relatório SELF para RH");
     if(r==="cancel"){ say("Envio cancelado. Toque em PDF completo para tentar de novo."); return; }
-    say(r==="shared" ? "PDF compartilhado." : "PDF salvo. Anexe na conversa do WhatsApp ou no e-mail.");
+    say(r==="shared" ? "PDF compartilhado." : "PDF baixado na pasta de downloads. Anexe na conversa do WhatsApp ou no e-mail.");
     track("report_pdf", {method:r});
     toast("PDF gerado <b>+ troféu salvo</b>"); burst(60); SND.play("phase");
   }catch(e){

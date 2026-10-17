@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.5.1] — 2026-10-17
+### Corrigido
+- PDF, imagem e vídeo (Matriz FDEM e SELF para RH): no computador, o arquivo é baixado direto para a pasta de downloads. Antes, o Safari do Mac abria o menu de compartilhar, sem opção de salvar. No celular e no tablet continua abrindo o compartilhar (WhatsApp, e-mail, "Salvar em Arquivos").
+
 ## [1.5.0] — 2026-10-17
 ### Adicionado
 - SELF para RH, fase Dados: câmera dentro da própria página (celular e computador). "Tirar foto" abre a câmera com moldura do rosto; "Gravar vídeo" grava até 30 segundos com contador, e dá para virar a câmera. Se o navegador não tiver câmera ou a permissão for negada, oferece enviar um arquivo.
