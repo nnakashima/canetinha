@@ -3,6 +3,14 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.4.0] — 2026-10-17
+### Alterado
+- SELF para RH, fase 2 "Como você joga": avaliação refeita para medir as 4 dimensões do SELF 4D de forma separada: 13 situações (4 de DISC, 3 de inteligência emocional, 3 de locus de controle e 3 de motivadores, cada motivador aparecendo em 2 situações). Opções embaralhadas e pesos ocultos.
+- Pontuação: DISC e motivadores ipsativos (% das escolhas, motivador normalizado pelas aparições); IE e locus em escala situacional de 1 a 4, `(soma − N) / 3N × 100`.
+### Adicionado
+- Ilustração de cada situação no estilo dos bonequinhos das capas.
+- Código SELF no formato do SELF 4D (ex.: `Is LCint IEhigh Msoc`) e código para o RH (ex.: `S4D1-Is-25502500-89-89-SOCTRA-ART-E`), no troféu (com botão de copiar), no relatório na tela, no PDF e no resumo do WhatsApp. Formato documentado em `docs/episodio-self-para-rh.md` para o episódio do anunciante da vaga.
+
 ## [1.3.0] — 2026-10-17
 ### Adicionado
 - SELF para RH: nova fase 5 **Seus dados** (antes do troféu): nome, WhatsApp, e-mail, CEP com endereço automático (ViaCEP), número, bairro e cidade, foto e vídeo de apresentação opcionais pela câmera do celular e autorização de uso dos dados (LGPD).

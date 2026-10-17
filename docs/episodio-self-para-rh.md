@@ -13,8 +13,33 @@
 | 5 | Dados | nome, WhatsApp, e-mail, CEP (ViaCEP preenche endereço, bairro e cidade), número; foto e vídeo opcionais; autorização LGPD | todos os campos (bairro opcional) + autorização |
 | 6 | Troféu | perfil SELF, conquistas e exportações (tela, PDF, WhatsApp, vídeo) | — |
 
-## Pontuação (modelo SELF 4D simplificado)
-Cada opção carrega `d` (D/I/S/C), `lc` e `ie` (1–4) e `m` (motivador). DISC = % das situações em que a letra foi escolhida; código = letra principal + secundária (`Id`). Locus e IE = `(soma − N) / 3N × 100` (Interno/Misto/Externo; Alta/Moderada/Baixa com cortes 33/66). Motivador = o mais escolhido. Os pesos não aparecem para o candidato nem nos relatórios.
+## Avaliação (fase 2)
+13 situações ilustradas, uma escolha por situação, opções embaralhadas (`PERM`) e pesos ocultos.
+
+| Dimensão | Situações | Opções | Cálculo |
+|---|---|---|---|
+| DISC | fila, ideia, novato, caixa | uma letra D, I, S ou C por opção | % de escolhas de cada letra (ipsativo) |
+| Inteligência emocional | grito, calado, crítica | níveis 1 a 4 | `(soma − N) / 3N × 100`; Alta > 66, Baixa < 33 |
+| Locus de controle | meta, promoção, pedido | níveis 1 (externo) a 4 (interno) | `(soma − N) / 3N × 100`; Interno > 66, Externo < 33 |
+| Motivadores | anima, dia perfeito, elogio | um motivador por opção; cada um dos 6 aparece 2 vezes | escolhas ÷ aparições × 100; ordena o principal e o secundário |
+
+Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[high|mid|low] M[motivador]`, ex.: `Is LCint IEhigh Msoc`.
+
+## Código para o RH (entrada do próximo episódio)
+`S4D1-<estilo>-<D><I><S><C>-<LC>-<IE>-<M1><M2>-<VAGA>-<V>`
+
+| Parte | Exemplo | Significado |
+|---|---|---|
+| `S4D1` | S4D1 | versão do formato |
+| estilo | Is | letra principal + secundária (minúscula) |
+| D I S C | 25502500 | 4 pontuações de 2 dígitos (00–99; 100 vira 99), na ordem D, I, S, C |
+| LC | 89 | locus de controle 00–99 |
+| IE | 89 | inteligência emocional 00–99 |
+| M1 M2 | SOCTRA | motivador principal e secundário (THE, UTI, AES, SOC, IND, TRA; XXX se não houver) |
+| VAGA | ART | ART = Artista de Sanduíche, GER = Gerente (campo `code` em `POS`) |
+| V | E | verificador: soma dos códigos de caractere do texto antes do último hífen, mod 36, em base 36 maiúscula |
+
+Para validar: recalcular o verificador e comparar; separar por `-`.
 
 ## Analytics (GA4)
 Eventos: `episode_start`, `position_selected` (position), `question_answered` (question), `phase_complete`, `trophy_reached` (position), `report_pdf`, `report_image`, `report_whatsapp`, `report_copy`, `voice_input`. `media_added` (type), `report_video`. Nenhum dado pessoal nem resposta vai para o GA4.
