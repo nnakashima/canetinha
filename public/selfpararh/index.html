@@ -519,6 +519,15 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 .cam-shot.video i{background:var(--e)}
 .cam-shot.on i{width:28px;height:28px;border-radius:8px}
 .cam-shot:disabled{opacity:.4}
+.nps{display:grid;gap:10px;padding:16px;border-radius:18px;background:var(--bg);border:2px solid var(--line)}
+.nps h3{font-size:16px}
+.nps-row{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:4px}
+.nps-b{aspect-ratio:1;min-width:0;padding:0;border:none;border-radius:9px;font-family:var(--font-display);font-size:clamp(11px,3.4vw,15px);color:var(--fg);background:var(--surface2);box-shadow:0 3px 0 #1E1A44}
+.nps-b.on.lo{background:var(--e);color:#fff;box-shadow:0 3px 0 var(--e-d)}
+.nps-b.on.mid{background:var(--f);color:var(--ink);box-shadow:0 3px 0 var(--f-d)}
+.nps-b.on.hi{background:var(--m);color:var(--ink);box-shadow:0 3px 0 var(--m-d)}
+.nps-b:active{transform:translateY(2px);box-shadow:none}
+.nps-lg{display:flex;justify-content:space-between;font-size:11.5px;font-weight:800;color:var(--dim)}
 .cepst{font-size:12.5px;font-weight:800;color:var(--dim);margin-top:-6px}
 .cepst.ok{color:var(--m)} .cepst.err{color:var(--f)}
 .avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid var(--f);box-shadow:0 5px 0 var(--f-d)}
@@ -706,7 +715,7 @@ const xrow = () => ({id:uid(), company:"", role:"", years:"", months:""});
 const erow = () => ({id:uid(), school:"", course:"", year:""});
 function blank(){
   return {pos:"", why:{tags:[], text:""}, ans:Array(NQ).fill(null), qi:0,
-    exp:{first:false, list:[xrow()]}, edu:{list:[erow()]}, name:"", phone:"", email:"", cep:"", addr:"", num:"", district:"", city:"", consent:false, photo:"", video:null, step:-1};
+    exp:{first:false, list:[xrow()]}, edu:{list:[erow()]}, name:"", nps:null, npsText:"", phone:"", email:"", cep:"", addr:"", num:"", district:"", city:"", consent:false, photo:"", video:null, step:-1};
 }
 let S = load();
 function load(){
@@ -780,7 +789,7 @@ function xp(){
   S.edu.list.forEach(r=>["school","course","year"].forEach(k=>{ if(t(r[k])) x += 15; }));
   ["name","email","addr","num","city"].forEach(k=>{ if(t(S[k])) x += 15; });
   if(phoneOk()) x += 15; if(cepOk()) x += 15; if(S.consent) x += 20;
-  if(S.photo) x += 40; if(S.video) x += 40;
+  if(S.photo) x += 40; if(S.video) x += 40; if(S.nps!==null) x += 30;
   for(let i=0;i<LAST;i++) if(complete(i)) x += 100;
   return x;
 }
@@ -1341,7 +1350,7 @@ function portrait(){
   const praise = `${q.disc} e ${q.lc.toLowerCase()}, ${P.mot?P_MOT[P.mot]:"cheio de vontade"} ${P_IE[P.ieCat]}.`;
   return {q, praise, status:"APTO", cards:[
     {k:"Estilo", v:q.disc, c:"f"}, {k:"Emoções", v:q.ie, c:"d"}, {k:"Motivação", v:q.mot, c:"m"},
-    {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO", c:"ok"}, {k:"Elogio", v:praise, c:"v", long:true}]};
+    {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO", c:"ok"}]};
 }
 function achievements(){
   const P = profile();
@@ -1372,6 +1381,7 @@ function summaryText(){
   L.push("*Experiência:*"); if(S.exp.first) L.push("Primeiro emprego"); else S.exp.list.filter(expOk).forEach(r=>L.push(`${t(r.role)} na ${t(r.company)} (${tenure(r)})`)); L.push("");
   L.push("*Formação:*"); S.edu.list.filter(eduOk).forEach(r=>L.push(`${t(r.course)} · ${t(r.school)} (${t(r.year)})`));
   if(S.video) L.push("", "_Envio também um vídeo de apresentação._");
+  if(S.nps!==null){ L.push("", `*Nota da experiência (NPS):* ${S.nps}/10`); if(t(S.npsText)) L.push("_"+t(S.npsText)+"_"); }
   L.push("", "Resultado orientativo, baseado em "+NQ+" situações.");
   L.push("Faça você também: " + location.origin + "/selfpararh");
   return L.join("\n");
@@ -1397,6 +1407,13 @@ function screen6(){
       <button class="btn ghost small" data-act="copycode">Copiar código para o RH</button></div>
     <p class="disc">Retrato do seu jeito de trabalhar hoje, a partir de ${NQ} situações. Não é nota, nem aprovação ou reprovação.</p>
     ${(()=>{ const R = portrait(); return R ? `<div class="badges">${R.cards.map(c=>`<div class="ach on q-${c.c} ${c.long?"long":""}">${c.c==="ok"?ICON.check:ICON.star}<span class="qk">${c.k}</span><span class="qv">${esc(c.v)}</span></div>`).join("")}</div>` : ""; })()}
+    <div class="nps" id="nps">
+      <h3>Como foi essa experiência?</h3>
+      <p class="hint">De 0 a 10, quanto você indicaria esta jornada para um amigo?</p>
+      <div class="nps-row">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="nps-b ${n<=6?"lo":n<=8?"mid":"hi"} ${S.nps===n?"on":""}" data-nps="${n}" aria-pressed="${S.nps===n}">${n}</button>`).join("")}</div>
+      <div class="nps-lg"><span>Nada provável</span><span>Muito provável</span></div>
+      ${S.nps!==null?`<label class="fld"><span>${S.nps>=9?"Que bom! O que você mais gostou?":S.nps>=7?"O que faria virar um 10?":"O que podemos melhorar?"} <em>(opcional)</em></span><textarea id="u-npsText" data-bind="npsText" class="${filled(S.npsText)}" placeholder="Escreva ou fale">${esc(S.npsText)}</textarea></label>`:""}
+    </div>
     <div class="export">
       <h3>Envie sua candidatura</h3>
       <p class="hint">${esc(t(S.name))} · ${esc(t(S.phone))} · ${esc(t(S.email))}</p>
@@ -1458,7 +1475,7 @@ function checkPhaseDone(wasDone){
 function setBind(path, v){
   const p = path.split(".");
   if(p[0]==="why") S.why[p[1]] = v;
-  else if(["name","phone","email","cep","addr","num","district","city"].includes(p[0])) S[p[0]] = v;
+  else if(["name","phone","email","cep","addr","num","district","city","npsText"].includes(p[0])) S[p[0]] = v;
   else if(p[0]==="exp"){ const r = S.exp.list.find(r=>r.id===p[1]); if(r) r[p[2]] = v; }
   else if(p[0]==="edu"){ const r = S.edu.list.find(r=>r.id===p[1]); if(r) r[p[2]] = v; }
 }
@@ -1524,6 +1541,9 @@ document.addEventListener("click", e=>{
   if(act==="camshot"){ camShot(); return; }
   if(act==="camflip"){ CAM.facing = CAM.facing==="user" ? "environment" : "user"; camStart(); return; }
   if(act==="camfile"){ const m = CAM.mode; closeCam(); const el = document.getElementById(m==="photo"?"upPhoto":"upVideo"); if(el) el.click(); return; }
+  if(b.dataset.nps !== undefined){ const first = S.nps===null; S.nps = +b.dataset.nps; save(); SND.play(S.nps>=9?"F":"yes"); if(first) burst(30);
+    track("nps_answered",{score:S.nps, category:S.nps>=9?"promotor":S.nps>=7?"neutro":"detrator"});
+    const y0 = window.scrollY; render(); window.scrollTo(0,y0); return; }
   if(act==="consent"){ const wasDone = doneSnapshot[5]; S.consent = !S.consent; save(); SND.play(S.consent?"yes":"click"); b.classList.toggle("on", S.consent); b.setAttribute("aria-pressed", S.consent); hud(); checkPhaseDone(wasDone); return; }
   if(act==="rmphoto"){ S.photo = ""; save(); render(); return; }
   if(act==="rmvideo"){ S.video = null; setVideo(null); save(); try{ VDB.del(); }catch(e){} render(); return; }
@@ -1671,6 +1691,7 @@ function cardHTML(){
     <div class="rc-sec"><div class="rc-l">Experiência</div><div class="rc-v">${S.exp.first ? "Primeiro emprego" : esc(X.slice(0,2).map(r=>`${t(r.role)} · ${t(r.company)} (${tenure(r)})`).join(" | "))}</div></div>
     <div class="rc-sec"><div class="rc-l">Formação</div><div class="rc-v">${esc(D.slice(0,2).map(r=>`${t(r.course)} · ${t(r.school)} (${t(r.year)})`).join(" | "))}</div></div>
     <div class="rc-sec"><div class="rc-l">Contato</div><div class="rc-v">${esc([t(S.phone), t(S.email), t(S.city)].filter(Boolean).join(" · "))}</div></div>
+    ${S.nps!==null?`<div class="rc-sec"><div class="rc-l">Nota da experiência</div><div class="rc-v">${S.nps}/10${t(S.npsText)?" · "+esc(S.npsText):""}</div></div>`:""}
     <div class="rc-foot"><span>Resultado orientativo · ${NQ} situações</span><span>proselling</span></div>
     <div class="rc-strip"><i style="background:var(--f)"></i><i style="background:var(--d)"></i><i style="background:var(--e)"></i><i style="background:var(--m)"></i></div>
   </div>`;
@@ -1805,6 +1826,7 @@ function buildPDF(){
   doc.autoTable(Object.assign({}, tableBase, { startY:y,
     head:[["#","Situação","Resposta escolhida"].map(T)],
     body: QS.map((q,i)=>[String(i+1), T(q.s), T(S.ans[i]!==null ? q.o[S.ans[i]].t : "-")]),
+    styles:Object.assign({}, tableBase.styles, {fontSize:8.5, cellPadding:1.8}),
     columnStyles:{0:{cellWidth:8,halign:"center"},1:{cellWidth:72}} }));
   y = doc.lastAutoTable.finalY + 10;
 
@@ -1823,13 +1845,20 @@ function buildPDF(){
     body: D.length ? D.map(r=>[T(t(r.school)), T(t(r.course)), T(t(r.year))]) : [["-","-","-"]], columnStyles:{2:{cellWidth:30}} }));
   y = doc.lastAutoTable.finalY + 8;
 
+  // NPS da experiência
+  if(S.nps!==null){ need(16); font("normal",7.5); color(RGB.muted); doc.text(T("NOTA DA EXPERIÊNCIA (NPS, 0 A 10)"), M, y, {charSpace:.4});
+    const cat = S.nps>=9?"Promotor":S.nps>=7?"Neutro":"Detrator", col = S.nps>=9?RGB.M:S.nps>=7?RGB.F:RGB.E;
+    fill(col); doc.roundedRect(M, y+2, 16, 8, 2, 2, "F"); font("bold",11); color(RGB.ink); doc.text(String(S.nps), M+8, y+7.6, {align:"center"});
+    font("bold",9.5); doc.text(T(cat), M+20, y+7.4);
+    if(t(S.npsText)){ font("normal",9); color(RGB.muted); const ln = doc.splitTextToSize(T(S.npsText), CW-50); doc.text(ln, M+44, y+7.4); y += Math.max(0,(ln.length-1)*4); }
+    y += 13; }
   // nota
   need(16); font("normal",8); color(RGB.muted);
   const note = doc.splitTextToSize(T(`Resultado orientativo, baseado em ${NQ} situações no modelo SELF 4D. Mostra um retrato do jeito de trabalhar hoje: não é nota, não substitui entrevista nem avaliação profissional especializada e não decide sozinho uma contratação.`), CW);
   doc.text(note, M, y); y += note.length*3.8 + 6;
 
   // assinatura
-  need(22); y += 8; draw([180,176,205]); doc.setLineWidth(.3);
+  need(14); y += 6; draw([180,176,205]); doc.setLineWidth(.3);
   doc.line(M, y, M+75, y); doc.line(W-M-75, y, W-M, y);
   font("normal",7.5); color(RGB.muted); doc.text("Candidato(a)", M, y+4); doc.text("Recrutador(a)", W-M-75, y+4);
 

@@ -3,6 +3,13 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.7.0] — 2026-10-17
+### Alterado
+- SELF para RH, troféu: saiu o card "Elogio" (o retrato fica com Estilo, Emoções, Motivação, Locus e Status). O elogio continua no resumo e no PDF.
+### Adicionado
+- Pergunta de satisfação NPS no troféu: nota de 0 a 10 ("quanto você indicaria esta jornada para um amigo?") e comentário opcional com voz, com a pergunta adaptada à nota. A nota e o comentário entram no resumo do WhatsApp, no relatório na tela e no PDF (com a categoria promotor, neutro ou detrator). Evento GA4 `nps_answered` (score e categoria, sem o comentário).
+- PDF mais compacto na tabela de situações, para caber em 2 páginas.
+
 ## [1.6.0] — 2026-10-17
 ### Alterado
 - SELF para RH, troféu: os 6 cards de conquistas viraram o retrato do candidato: uma qualidade por dimensão (Estilo/DISC, Emoções/IE, Motivação, Locus), o status (sempre "APTO") e um elogio que junta as quatro (ex.: "Comunicativo e protagonista, movido a ajudar com muito equilíbrio."). Qualidades, elogio e status também entram no resumo do WhatsApp, no relatório na tela e no PDF (no lugar das conquistas).
