@@ -35,7 +35,7 @@ Ilustrações vetoriais em SVG geradas por código (`SCENES` em `public/index.ht
 | R5 | pessoas em pé diante de uma TV com calendário e relógio |
 | Venda de Combo | bandeja com sanduíche, refrigerante e batata rústica |
 | Delivery | entregador comemorando ao lado da moto |
-| Contratar Pessoas | nova funcionária chegando à loja ("BEM-VINDA!") |
+| SELF para RH | camarim: moça e rapaz de costas diante do espelho com lâmpadas, o reflexo mostra os dois sorrindo |
 | Liderança | gerente com prancheta no centro de uma roda de jogadores |
 | Finanças Básico | DRE com as siglas DRE, CMV, MC, FC, PB em órbita |
 | Marketing Digital | celular com curtidas subindo e ícones de apps genéricos |

@@ -3,6 +3,12 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.1.0] — 2026-10-17
+### Adicionado
+- Episódio **SELF para RH** ("Em breve!") em `/selfpararh`, segundo card da prateleira Gestão, logo depois da Matriz FDEM. Capa ilustrada: camarim com moça e rapaz diante do espelho com lâmpadas.
+### Removido
+- Episódio "Contratar Pessoas" da vitrine, substituído por SELF para RH.
+
 ## [1.0.3] — 2026-10-11
 ### Alterado
 - Imagem de prévia do link da Matriz FDEM sem número de episódio: o selo agora diz só "CANETINHA MÁGICA · EPISÓDIO", porque a ordem de apresentação futura não terá este como o primeiro. Novo arquivo `og-matrizfdem-v3.jpg`.
