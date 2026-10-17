@@ -67,6 +67,9 @@ function send(req, res, file, opts = {}) {
         .replace(/<title>[^<]*<\/title>/, `<title>${t} · Canetinha Mágica</title>`)
         .replace(/(<meta property="og:title" content=")[^"]*"/, `$1${t} · Canetinha Mágica (em breve)"`)
         .replace('<meta property="og:url" content="__ORIGIN__/"', `<meta property="og:url" content="__ORIGIN__/${opts.route}"`);
+      // capa própria do episódio, se existir (public/assets/og-<slug>.jpg)
+      if (fs.existsSync(path.join(ROOT, "assets", `og-${opts.route}.jpg`)))
+        html = html.replace(/(<meta (?:property|name)="(?:og|twitter):image" content=")[^"]*"/g, `$1__ORIGIN__/assets/og-${opts.route}.jpg"`);
     }
     html = html
       .replace(/__ORIGIN__/g, origin(req))

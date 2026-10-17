@@ -3,6 +3,12 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.1.1] — 2026-10-17
+### Alterado
+- Prévia do link de episódios "Em breve!": quando existe `public/assets/og-<slug>.jpg`, o link `/<slug>` usa essa imagem no WhatsApp e redes (antes mostrava sempre a capa do hub, com a Matriz FDEM).
+### Adicionado
+- `og-selfpararh.jpg`: prévia do SELF para RH com a capa do camarim e a faixa "EM BREVE!".
+
 ## [1.1.0] — 2026-10-17
 ### Adicionado
 - Episódio **SELF para RH** ("Em breve!") em `/selfpararh`, segundo card da prateleira Gestão, logo depois da Matriz FDEM. Capa ilustrada: camarim com moça e rapaz diante do espelho com lâmpadas.
