@@ -968,7 +968,7 @@ document.addEventListener("click", e=>{
   if(e.target.closest("#waBtn")) track("report_whatsapp");
   const b = e.target.closest("button"); if(!b) return;
   if(b.dataset.mic){ micStart(b.dataset.mic); return; }
-  if(b.dataset.sheet==="focus"){ const el = document.getElementById(sheetTarget); closeSheet(); if(el){ el.focus(); } return; }
+  if(b.dataset.sheet==="focus"){ const el = document.getElementById(sheetTarget); closeSheet(); if(el){ if(IS_IOS) iosDictate(el); else el.focus(); } return; }
   if(b.dataset.sheet==="close"){ closeSheet(); return; }
   if(b.dataset.go !== undefined) return go(+b.dataset.go);
   if(b.dataset.ex){ S.obj.goal = b.dataset.ex + " até "; save(); render("o-goal"); const el=$("#o-goal"); el.setSelectionRange(el.value.length, el.value.length); return; }
@@ -1050,8 +1050,8 @@ function micDecorate(){
     b.setAttribute("aria-label", "Falar em vez de digitar"); b.innerHTML = ICON.mic; w.appendChild(b);
   });
 }
-/* iPhone/iPad: o reconhecimento de voz do Safari é instável; o ditado do teclado funciona sempre.
-   O toque no microfone abre o teclado no campo e mostra onde fica o microfone do teclado. */
+/* iPhone/iPad: primeiro tenta o reconhecimento de voz do Safari (funciona quando Siri e Ditado estão ativos).
+   Se falhar, a folha "Fale pelo teclado" abre o teclado no campo; iosDictate() fica disponível para esse caminho. */
 const IS_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 let dictT;
 function iosDictate(el){
@@ -1067,7 +1067,6 @@ function iosDictate(el){
 function micStart(id){
   const el = document.getElementById(id); if(!el) return;
   if(rec){ try{ rec.stop(); }catch(e){} return; }
-  if(IS_IOS){ return iosDictate(el); }
   if(!SR || srBlocked){ return dictHelp(el, true); }
   let r; try{ r = new SR(); }catch(e){ srBlocked = true; return dictHelp(el, true); }
   r.lang = "pt-BR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
