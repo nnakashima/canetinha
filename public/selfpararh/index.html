@@ -244,6 +244,15 @@ input,textarea{min-width:0;max-width:100%}
 .ach{padding:10px 6px;border-radius:14px;background:var(--surface2);text-align:center;font-size:12px;font-weight:900;opacity:.35;display:grid;gap:4px;justify-items:center}
 .ach.on{opacity:1;background:var(--surface2);box-shadow:inset 0 0 0 2px var(--f)}
 .ach svg{width:26px;height:26px;color:var(--f)}
+.ach .qk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.ach .qv{font-family:var(--font-display);font-weight:400;font-size:clamp(11.5px,3.6vw,14px);line-height:1.15;color:var(--fg);overflow-wrap:normal;hyphens:auto}
+.ach.long{grid-column:1/-1;padding:12px 14px}.ach.long .qv{font-family:var(--font-body);font-weight:800;font-size:15px;line-height:1.35}
+.ach.q-ok{grid-column:span 2;grid-template-columns:auto auto;align-items:center;justify-content:center;column-gap:10px}.ach.q-ok svg{grid-row:span 2}
+.ach.q-d{box-shadow:inset 0 0 0 2px var(--d)} .ach.q-d svg{color:var(--d)}
+.ach.q-e{box-shadow:inset 0 0 0 2px var(--e)} .ach.q-e svg{color:var(--e)}
+.ach.q-m{box-shadow:inset 0 0 0 2px var(--m)} .ach.q-m svg{color:var(--m)}
+.ach.q-v{box-shadow:inset 0 0 0 2px #9B7BFF} .ach.q-v svg{color:#9B7BFF}
+.ach.q-ok{background:var(--m);box-shadow:0 4px 0 var(--m-d)} .ach.q-ok svg{color:var(--ink)} .ach.q-ok .qk{color:var(--ink);opacity:.7} .ach.q-ok .qv{color:var(--ink);font-size:20px}
 .copyarea{width:100%;min-height:180px;font-size:13px;font-weight:600}
 .ver{display:inline-block;margin-top:6px;font-variant-numeric:tabular-nums;opacity:.85}
 .hub-link{display:inline-block;margin-bottom:14px;padding:10px 16px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--fg);font-weight:900;font-size:13px;text-decoration:none}
@@ -1318,6 +1327,22 @@ async function cepLookup(){
   }catch(e){ say("Não consegui buscar o CEP agora. Preencha o endereço à mão.","err"); }
 }
 
+/* retrato: uma qualidade por dimensão, um elogio que junta as quatro e o status */
+const Q_DISC = {D:"Decidido", I:"Comunicativo", S:"Parceiro", C:"Caprichoso"};
+const Q_IE   = {Alta:"Equilibrado", Moderada:"Sensível", Baixa:"Espontâneo"};
+const Q_LC   = {Interno:"Protagonista", Misto:"Realista", Externo:"Adaptável"};
+const Q_MOT  = {THE:"Curioso", UTI:"Realizador", AES:"Harmonioso", SOC:"Prestativo", IND:"Ambicioso", TRA:"Confiável"};
+const P_MOT  = {THE:"movido a aprender", UTI:"movido a resultado", AES:"movido a harmonia", SOC:"movido a ajudar", IND:"movido a crescer", TRA:"movido a valores"};
+const P_IE   = {Alta:"com muito equilíbrio", Moderada:"com sensibilidade", Baixa:"com autenticidade"};
+function portrait(){
+  const P = profile();
+  if(!P.p1) return null;
+  const q = {disc:Q_DISC[P.p1], ie:Q_IE[P.ieCat], mot:P.mot?Q_MOT[P.mot]:"Motivado", lc:Q_LC[P.lcCat]};
+  const praise = `${q.disc} e ${q.lc.toLowerCase()}, ${P.mot?P_MOT[P.mot]:"cheio de vontade"} ${P_IE[P.ieCat]}.`;
+  return {q, praise, status:"APTO", cards:[
+    {k:"Estilo", v:q.disc, c:"f"}, {k:"Emoções", v:q.ie, c:"d"}, {k:"Motivação", v:q.mot, c:"m"},
+    {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO", c:"ok"}, {k:"Elogio", v:praise, c:"v", long:true}]};
+}
 function achievements(){
   const P = profile();
   return [
@@ -1340,6 +1365,7 @@ function summaryText(){
   L.push("*Por que este time:* "+[...S.why.tags, t(S.why.text)].filter(Boolean).join(" · "), "");
   L.push(`*Perfil SELF:* ${P.code} (${discLine(P)})`);
   L.push(`*Código SELF:* ${P.full}`);
+  { const R = portrait(); if(R){ L.push(`*Qualidades:* ${R.q.disc} · ${R.q.ie} · ${R.q.mot} · ${R.q.lc}`); L.push(`*Elogio:* ${R.praise}`); L.push(`*Status:* ${R.status}`); } }
   L.push(`*Código para o RH:* ${selfCode()}`);
   L.push(`*Estilo:* ${"DISC".split("").map(k=>k+" "+P.pct[k]+"%").join(" · ")}`);
   L.push(`*Locus:* ${P.lcCat} · *Emoções (IE):* ${P.ieCat} · *Motivação:* ${P.mot?MOT[P.mot].name:"-"}${P.mot2?" e "+MOT[P.mot2].name:""}`, "");
@@ -1370,7 +1396,7 @@ function screen6(){
     <div class="codebox"><div class="lab">Código SELF</div><div class="hc">${esc(P.full)}</div><code id="selfCode">${esc(selfCode())}</code>
       <button class="btn ghost small" data-act="copycode">Copiar código para o RH</button></div>
     <p class="disc">Retrato do seu jeito de trabalhar hoje, a partir de ${NQ} situações. Não é nota, nem aprovação ou reprovação.</p>
-    <div class="badges">${achievements().map(a=>`<div class="ach ${a.on?"on":""}">${ICON.star}${a.n}</div>`).join("")}</div>
+    ${(()=>{ const R = portrait(); return R ? `<div class="badges">${R.cards.map(c=>`<div class="ach on q-${c.c} ${c.long?"long":""}">${c.c==="ok"?ICON.check:ICON.star}<span class="qk">${c.k}</span><span class="qv">${esc(c.v)}</span></div>`).join("")}</div>` : ""; })()}
     <div class="export">
       <h3>Envie sua candidatura</h3>
       <p class="hint">${esc(t(S.name))} · ${esc(t(S.phone))} · ${esc(t(S.email))}</p>
@@ -1633,7 +1659,7 @@ function cardHTML(){
       <div class="dt">${now.toLocaleDateString("pt-BR")}<br>${now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</div></div>
     <div class="rc-title"><div class="k">${PROGRAM} · ${HUD_TITLE}</div><h3>${EPISODE}</h3></div>
     <div class="rc-who"><span class="nm">${S.photo?`<img class="ph" src="${S.photo}" alt="">`:""}<b>${esc(t(S.name)||"Participante")}</b></span><span class="rc-pill">${esc(pos?pos.title:"Vaga")}</span></div>
-    <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>Perfil SELF · ${esc(discLine(P))}<small>Nív ${levelOf(x)} · ${x} XP · ${ach}/6 conquistas</small></p></div>
+    <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>Perfil SELF · ${esc(discLine(P))}<small>${(()=>{ const R = portrait(); return R ? esc(`${R.q.disc} · ${R.q.ie} · ${R.q.mot} · ${R.q.lc} · ${R.status}`) : ""; })()}</small></p></div>
     <div class="rc-disc">${"DISC".split("").map(k=>`<div>${discB(k)}<span>${P.pct[k]}%</span></div>`).join("")}</div>
     <div class="rc-3">
       <div class="rc-sec"><div class="rc-l">Locus</div><div class="rc-v">${P.lcCat}</div></div>
@@ -1726,9 +1752,10 @@ function buildPDF(){
   pills.slice().reverse().forEach(([txt,bg,fg])=>{ const w = doc.getTextWidth(txt)+8; px -= w; fill(bg); doc.roundedRect(px,y-1,w,7.5,3.75,3.75,"F"); color(fg); doc.text(txt, px+w/2, y+3.9, {align:"center"}); px -= 2.5; });
   y += S.photo ? 24 : 22;
   font("bold",7); let ax = M;
-  achievements().forEach(a=>{ const txt = T(a.n.toUpperCase()); const w = doc.getTextWidth(txt)+6;
-    if(a.on){ fill([255,244,214]); draw(RGB.F); } else { fill(RGB.soft); draw(RGB.line); }
-    doc.setLineWidth(.3); doc.roundedRect(ax,y,w,6,3,3,"FD"); color(a.on?[120,84,0]:[170,166,195]); doc.text(txt, ax+w/2, y+4.1, {align:"center"}); ax += w + 2; });
+  { const R = portrait(); if(R){ const items = [[R.q.disc,RGB.F],[R.q.ie,RGB.D],[R.q.mot,RGB.M],[R.q.lc,RGB.E],["STATUS: APTO",[46,160,90]]];
+    items.forEach(([txt0,col],i)=>{ const txt = T(String(txt0).toUpperCase()); const w = doc.getTextWidth(txt)+7;
+      fill(i===4?col:RGB.soft); draw(col); doc.setLineWidth(.4); doc.roundedRect(ax,y,w,6,3,3,"FD"); color(i===4?RGB.white:RGB.ink); doc.text(txt, ax+w/2, y+4.1, {align:"center"}); ax += w + 2; });
+    y += 9; font("italic",9); color(RGB.muted); doc.text(T("Elogio: "+R.praise), M, y+1.5); } }
   y += 14;
 
   const section = (n, title) => { need(16); fill(RGB.navy); doc.roundedRect(M,y-4.6,6.5,6.5,1.6,1.6,"F"); font("bold",8.5); color(RGB.white); doc.text(String(n), M+3.25, y, {align:"center"});

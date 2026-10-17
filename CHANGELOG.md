@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.6.0] — 2026-10-17
+### Alterado
+- SELF para RH, troféu: os 6 cards de conquistas viraram o retrato do candidato: uma qualidade por dimensão (Estilo/DISC, Emoções/IE, Motivação, Locus), o status (sempre "APTO") e um elogio que junta as quatro (ex.: "Comunicativo e protagonista, movido a ajudar com muito equilíbrio."). Qualidades, elogio e status também entram no resumo do WhatsApp, no relatório na tela e no PDF (no lugar das conquistas).
+
 ## [1.5.1] — 2026-10-17
 ### Corrigido
 - PDF, imagem e vídeo (Matriz FDEM e SELF para RH): no computador, o arquivo é baixado direto para a pasta de downloads. Antes, o Safari do Mac abria o menu de compartilhar, sem opção de salvar. No celular e no tablet continua abrindo o compartilhar (WhatsApp, e-mail, "Salvar em Arquivos").

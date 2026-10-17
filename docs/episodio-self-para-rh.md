@@ -25,6 +25,16 @@
 
 Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[high|mid|low] M[motivador]`, ex.: `Is LCint IEhigh Msoc`.
 
+## Retrato (troféu)
+| Dimensão | Resultado → qualidade |
+|---|---|
+| Estilo (DISC principal) | D Decidido · I Comunicativo · S Parceiro · C Caprichoso |
+| Emoções (IE) | Alta Equilibrado · Moderada Sensível · Baixa Espontâneo |
+| Motivação | THE Curioso · UTI Realizador · AES Harmonioso · SOC Prestativo · IND Ambicioso · TRA Confiável |
+| Locus | Interno Protagonista · Misto Realista · Externo Adaptável |
+
+Elogio: `<Estilo> e <locus>, movido a <motivador> com <emoções>.` Status: sempre "APTO" (o episódio não reprova ninguém).
+
 ## Código para o RH (entrada do próximo episódio)
 `S4D1-<estilo>-<D><I><S><C>-<LC>-<IE>-<M1><M2>-<VAGA>-<V>`
 
