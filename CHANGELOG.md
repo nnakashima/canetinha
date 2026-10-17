@@ -3,6 +3,12 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.3.0] — 2026-10-17
+### Adicionado
+- SELF para RH: nova fase 5 **Seus dados** (antes do troféu): nome, WhatsApp, e-mail, CEP com endereço automático (ViaCEP), número, bairro e cidade, foto e vídeo de apresentação opcionais pela câmera do celular e autorização de uso dos dados (LGPD).
+- Foto (recortada e reduzida para 480 px) no troféu, no relatório na tela e no PDF; vídeo guardado no próprio aparelho (IndexedDB) e compartilhado pelo botão "Vídeo de apresentação" no troféu.
+- Nada é enviado a servidor: os dados só saem do celular quando a pessoa compartilha o relatório. Eventos GA4 novos: `media_added` (tipo) e `report_video`, sem dados pessoais.
+
 ## [1.2.0] — 2026-10-17
 ### Adicionado
 - Protótipo do episódio **SELF para RH** em `/selfpararh` ("Quero Jogar no Time"): abertura com as letras S E L F, carrossel de vagas (Artista de Sanduíche, Gerente), motivos com chips, 5 situações no modelo SELF 4D, experiência (ou primeiro emprego), formação e troféu com perfil SELF, relatório na tela, PDF e resumo pelo WhatsApp. Voz em todos os campos e eventos GA4. Ver [docs/episodio-self-para-rh.md](docs/episodio-self-para-rh.md).

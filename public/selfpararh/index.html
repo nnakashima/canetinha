@@ -472,6 +472,22 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 #xpN{flex:none;font-weight:900;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 @media (max-width:420px){.clock svg{display:none}.clock{padding:6px 7px}}
 .tlab{font-weight:800;font-size:14px;margin-bottom:-6px}
+.media{display:grid;gap:10px;padding:14px;border-radius:18px;background:var(--bg);border:2px solid var(--line)}
+.media h3{font-size:16px}
+.media .mbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.media .mbtns label{cursor:pointer}
+.media .mbtns svg{width:20px;height:20px}
+.media input[type=file]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.prev{position:relative;display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;background:var(--surface2)}
+.prev img{width:72px;height:72px;border-radius:14px;object-fit:cover;flex:none}
+.prev video{width:96px;height:128px;border-radius:12px;object-fit:cover;background:#000;flex:none}
+.prev .pi{flex:1;min-width:0;display:grid;gap:6px;font-weight:800;font-size:14px}
+.prev .pi small{color:var(--muted);font-weight:700;font-size:12px}
+.cepst{font-size:12.5px;font-weight:800;color:var(--dim);margin-top:-6px}
+.cepst.ok{color:var(--m)} .cepst.err{color:var(--f)}
+.avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;border:4px solid var(--f);box-shadow:0 5px 0 var(--f-d)}
+.rc-who .ph{width:2.6em;height:2.6em;border-radius:50%;object-fit:cover;border:2px solid var(--f);flex:none}
+.rc-who .nm{display:flex;align-items:center;gap:8px;min-width:0}
 .unitl{font-size:12px;font-weight:800;color:var(--dim);margin-top:-2px}
 </style>
 
@@ -560,6 +576,7 @@ const PH = [
   {label:"Avaliação",   title:"Como você joga",      intro:"Cinco situações do dia a dia de uma loja. Em cada uma, toque na opção que mais parece com você. Vale a primeira impressão.", quest:"Responda as 5 situações"},
   {label:"Experiência", title:"Sua experiência",     intro:"Conte onde você já trabalhou. Primeiro emprego? Tudo bem, é só marcar.", quest:"Informe uma experiência ou marque primeiro emprego"},
   {label:"Formação",    title:"Sua formação",        intro:"Onde você estuda ou estudou. Vale escola, curso técnico, faculdade ou curso livre.", quest:"Informe escola, curso e ano"},
+  {label:"Dados",       title:"Seus dados",          intro:"Para o RH conseguir falar com você. Tudo fica só neste celular até você decidir enviar.", quest:"Preencha seus contatos e autorize o uso"},
   {label:"Troféu",      title:"Jornada concluída"}
 ];
 const LAST = PH.length - 1;
@@ -571,7 +588,7 @@ const xrow = () => ({id:uid(), company:"", role:"", years:"", months:""});
 const erow = () => ({id:uid(), school:"", course:"", year:""});
 function blank(){
   return {pos:"", why:{tags:[], text:""}, ans:Array(NQ).fill(null), qi:0,
-    exp:{first:false, list:[xrow()]}, edu:{list:[erow()]}, name:"", phone:"", step:-1};
+    exp:{first:false, list:[xrow()]}, edu:{list:[erow()]}, name:"", phone:"", email:"", cep:"", addr:"", num:"", district:"", city:"", consent:false, photo:"", video:null, step:-1};
 }
 let S = load();
 function load(){
@@ -586,6 +603,12 @@ const t = s => String(s??"").trim();
 const posOf = id => POS.find(p=>p.id===id);
 const nAns = () => S.ans.filter(a=>a!==null).length;
 const expOk = r => !!(t(r.company) && t(r.role) && (t(r.years) || t(r.months)));
+const digits = v => String(v??"").replace(/\D/g,"");
+const phoneOk = () => digits(S.phone).length >= 10;
+const emailOk = () => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t(S.email));
+const cepOk = () => digits(S.cep).length === 8;
+const fmtCep = v => { const d = digits(v); return d.length===8 ? d.slice(0,5)+"-"+d.slice(5) : t(v); };
+const addrLine = () => [ [t(S.addr), t(S.num)].filter(Boolean).join(", "), t(S.district), t(S.city), cepOk()?"CEP "+fmtCep(S.cep):""].filter(Boolean).join(" · ");
 const eduOk = r => !!(t(r.school) && t(r.course) && t(r.year));
 const tenure = r => { const y = parseInt(r.years)||0, m = parseInt(r.months)||0; const p = [];
   if(y) p.push(y+(y>1?" anos":" ano")); if(m) p.push(m+(m>1?" meses":" mês")); return p.join(" e ") || (t(r.years)||t(r.months)||""); };
@@ -613,7 +636,8 @@ function complete(i){
     case 2: return nAns() === NQ;
     case 3: return S.exp.first || S.exp.list.some(expOk);
     case 4: return S.edu.list.some(eduOk);
-    case 5: return complete(4);
+    case 5: return !!(t(S.name) && phoneOk() && emailOk() && cepOk() && t(S.addr) && t(S.num) && t(S.city) && S.consent);
+    case 6: return complete(5);
   }
   return false;
 }
@@ -624,7 +648,11 @@ function missing(i){
     case 2: { const q = S.ans.findIndex(a=>a===null); return q<0 ? null : {msg:`Falta responder a situação ${q+1}`, id:null, sel:".arena", q}; }
     case 3: { if(complete(3)) return null; const r = S.exp.list[0]; const k = ["company","role"].find(k=>!t(r[k])) || "years";
       const nm = {company:"o nome da empresa", role:"o cargo", years:"o tempo de casa"}; return {msg:"Falta preencher "+nm[k]+" (ou marque primeiro emprego)", id:`x-${r.id}-${k}`}; }
-    case 4: case 5: { if(complete(4)) return null; const r = S.edu.list[0]; const k = ["school","course","year"].find(k=>!t(r[k]));
+    case 5: case 6: { if(complete(5)) return null;
+      const chk = [[!t(S.name),"u-name","seu nome"],[!phoneOk(),"u-phone","seu WhatsApp com DDD"],[!emailOk(),"u-email","um e-mail válido"],[!cepOk(),"u-cep","o CEP (8 números)"],
+        [!t(S.addr),"u-addr","o endereço"],[!t(S.num),"u-num","o número"],[!t(S.city),"u-city","a cidade"],[!S.consent,"u-consent","a autorização de uso dos dados"]].find(c=>c[0]);
+      return {msg:"Falta "+(chk[1]==="u-consent"?"marcar ":"preencher ")+chk[2], id:chk[1]}; }
+    case 4: { if(complete(4)) return null; const r = S.edu.list[0]; const k = ["school","course","year"].find(k=>!t(r[k]));
       const nm = {school:"a escola", course:"o curso", year:"o ano de conclusão"}; return {msg:"Falta preencher "+nm[k||"school"], id:`d-${r.id}-${k||"school"}`}; }
   }
   return null;
@@ -647,7 +675,9 @@ function xp(){
   x += nAns()*40;
   if(S.exp.first) x += 40; else S.exp.list.forEach(r=>{ ["company","role"].forEach(k=>{ if(t(r[k])) x += 15; }); if(t(r.years)||t(r.months)) x += 15; });
   S.edu.list.forEach(r=>["school","course","year"].forEach(k=>{ if(t(r[k])) x += 15; }));
-  if(t(S.name)) x += 30;
+  ["name","email","addr","num","city"].forEach(k=>{ if(t(S[k])) x += 15; });
+  if(phoneOk()) x += 15; if(cepOk()) x += 15; if(S.consent) x += 20;
+  if(S.photo) x += 40; if(S.video) x += 40;
   for(let i=0;i<LAST;i++) if(complete(i)) x += 100;
   return x;
 }
@@ -775,7 +805,7 @@ function screenWelcome(){
     <div class="program">${PROGRAM} · Episódio</div>
     <h1>SELF<span class="after">para RH</span></h1>
     <p class="intro" style="text-align:center"><b>${HUD_TITLE}!</b> Escolha a vaga, conte o que te trouxe até aqui, mostre como você joga e apresente sua bagagem. No fim, você recebe o seu perfil SELF.</p>
-    <div class="meta"><span class="chip">${LAST} fases</span><span class="chip">~8 minutos</span><span class="chip">Fica salvo neste celular</span><button class="chip sndchip" data-act="sound"><span class="ic"></span><span class="lb"></span></button></div>
+    <div class="meta"><span class="chip">${LAST} fases</span><span class="chip">~10 minutos</span><span class="chip">Fica salvo neste celular</span><button class="chip sndchip" data-act="sound"><span class="ic"></span><span class="lb"></span></button></div>
   </div>
   <div class="cats">${"SELF".split("").map(k=>`<div class="cat">${selfL(k)}<div><b>${SELF[k].name}</b><p>${SELF[k].desc}</p></div></div>`).join("")}</div>
   <div class="nav"><button class="btn" data-act="start">${started?"Continuar jornada":"Começar jornada"}</button></div>
@@ -899,6 +929,93 @@ function screen4(){
   return shell(4, S.edu.list.map((r,i)=>entryD(r,i,S.edu.list.length)).join("") + `<button class="add" data-add="d">+ Adicionar outra formação</button>`, "Pegar troféu");
 }
 
+const ICAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>';
+const IVID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="12.5" height="11" rx="2.5"/><path d="M15.5 10.5l5-3v9l-5-3z"/></svg>';
+let cepMsg = "", cepCls = "";
+const mb = n => n > 1048576 ? (n/1048576).toFixed(1).replace(".",",")+" MB" : Math.max(1,Math.round(n/1024))+" KB";
+function screen5(){
+  const fld = (id, k, label, ph, extra="") => `<label class="fld"><span>${label}</span><input id="${id}" data-bind="${k}" class="${filled(S[k])}" value="${esc(S[k])}" placeholder="${ph}" ${extra}></label>`;
+  const v = S.video;
+  return shell(5, `
+    ${fld("u-name","name","Nome completo","Nome e sobrenome",'autocomplete="name"')}
+    <div class="two">
+      ${fld("u-phone","phone","WhatsApp com DDD","(11) 90000-0000",'inputmode="tel" autocomplete="tel"')}
+      ${fld("u-email","email","E-mail","voce@email.com",'inputmode="email" autocomplete="email"')}
+    </div>
+    ${fld("u-cep","cep","CEP","00000-000",'inputmode="numeric" autocomplete="postal-code"')}
+    <div class="cepst ${cepCls}" id="cepSt">${cepMsg || "Digite o CEP que a gente completa o endereço."}</div>
+    ${fld("u-addr","addr","Endereço","Rua, avenida…",'autocomplete="address-line1"')}
+    <div class="two">
+      ${fld("u-num","num","Número e complemento","Ex.: 120, apto 3")}
+      ${fld("u-district","district","Bairro <em>(opcional)</em>","Bairro")}
+    </div>
+    ${fld("u-city","city","Cidade / UF","Ex.: São Paulo/SP",'autocomplete="address-level2"')}
+    <div class="media">
+      <h3>Foto ou vídeo de apresentação <em style="font-family:var(--font-body);font-style:normal;font-size:13px;color:var(--dim)">(opcional)</em></h3>
+      <p class="hint">Use a câmera da frente. No vídeo, conte em até 30 segundos quem você é e por que quer jogar no time.</p>
+      <div class="mbtns">
+        <label class="btn ghost small">${ICAM}<span>${S.photo?"Trocar foto":"Tirar foto"}</span><input type="file" accept="image/*" capture="user" data-media="photo"></label>
+        <label class="btn ghost small">${IVID}<span>${v?"Regravar":"Gravar vídeo"}</span><input type="file" accept="video/*" capture="user" data-media="video"></label>
+      </div>
+      ${S.photo?`<div class="prev"><img src="${S.photo}" alt="Sua foto"><div class="pi">Foto pronta<small>Entra no relatório e no PDF.</small></div><button class="x" data-act="rmphoto" aria-label="Remover foto">${ICON.x}</button></div>`:""}
+      ${v?`<div class="prev">${VIDEO.url?`<video src="${VIDEO.url}" playsinline controls muted></video>`:""}<div class="pi">Vídeo gravado<small>${mb(v.size)}${v.dur?" · "+Math.round(v.dur)+"s":""}. Você envia o vídeo junto com o PDF no troféu.</small></div><button class="x" data-act="rmvideo" aria-label="Remover vídeo">${ICON.x}</button></div>`:""}
+    </div>
+    <button class="tog ${S.consent?"on":""}" id="u-consent" data-act="consent" aria-pressed="${S.consent}"><span class="chk">${ICON.check}</span><span>Autorizo o uso dos meus dados, foto e vídeo só para este processo seletivo.</span></button>
+    <div class="note">${ICON.info}<span>Seus dados ficam guardados apenas neste celular. Eles só chegam ao RH quando você enviar o relatório. Você pode apagar tudo no fim, em "Recomeçar do zero".</span></div>
+  `, "Pegar troféu");
+}
+
+/* vídeo: guardado no IndexedDB deste aparelho */
+const VIDEO = {blob:null, url:null};
+const VDB = {
+  open(){ return new Promise((ok,ko)=>{ try{ const q = indexedDB.open("selfpararh", 1); q.onupgradeneeded = ()=>q.result.createObjectStore("m"); q.onsuccess = ()=>ok(q.result); q.onerror = ()=>ko(q.error); }catch(e){ ko(e); } }); },
+  async op(mode, fn){ const db = await this.open(); return new Promise((ok,ko)=>{ const tx = db.transaction("m", mode); const q = fn(tx.objectStore("m")); tx.oncomplete = ()=>ok(q && q.result); tx.onerror = ()=>ko(tx.error); }); },
+  put(b){ return this.op("readwrite", st=>st.put(b, "video")); },
+  get(){ return this.op("readonly", st=>st.get("video")); },
+  del(){ return this.op("readwrite", st=>st.delete("video")); }
+};
+function setVideo(blob){ if(VIDEO.url) URL.revokeObjectURL(VIDEO.url); VIDEO.blob = blob; VIDEO.url = blob ? URL.createObjectURL(blob) : null; }
+(async()=>{ if(!S.video) return; try{ const b = await VDB.get(); if(b){ setVideo(b); if(S.step===5) render(); } else { S.video = null; save(); } }catch(e){} })();
+async function onMedia(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const wasDone = doneSnapshot[5];
+  if(input.dataset.media==="photo"){
+    try{
+      const url = URL.createObjectURL(f); const img = new Image();
+      await new Promise((ok,ko)=>{ img.onload = ok; img.onerror = ko; img.src = url; });
+      const side = Math.min(img.naturalWidth, img.naturalHeight), sz = Math.min(480, side);
+      const c = document.createElement("canvas"); c.width = c.height = sz;
+      c.getContext("2d").drawImage(img, (img.naturalWidth-side)/2, (img.naturalHeight-side)/2, side, side, 0, 0, sz, sz);
+      URL.revokeObjectURL(url);
+      S.photo = c.toDataURL("image/jpeg", .82); save(); SND.play("F"); burst(40); track("media_added",{type:"photo"});
+    }catch(e){ toast("Não consegui ler a foto. Tente de novo.", true); }
+  } else {
+    if(f.size > 80*1048576){ toast("Vídeo muito grande. Grave até uns 30 segundos.", true); input.value = ""; return; }
+    let dur = 0; try{ const u = URL.createObjectURL(f), el = document.createElement("video"); el.preload = "metadata"; el.src = u;
+      await new Promise(ok=>{ el.onloadedmetadata = ok; el.onerror = ok; setTimeout(ok, 3000); }); dur = isFinite(el.duration) ? el.duration : 0; URL.revokeObjectURL(u); }catch(e){}
+    setVideo(f); S.video = {size:f.size, type:f.type||"video/mp4", dur}; save();
+    try{ await VDB.put(f); }catch(e){ toast("O vídeo fica disponível só até fechar esta página.", true); }
+    SND.play("F"); burst(40); track("media_added",{type:"video"});
+  }
+  render(); checkPhaseDone(wasDone);
+}
+document.addEventListener("change", e=>{ const el = e.target; if(el && el.dataset && el.dataset.media) onMedia(el); });
+let cepLast = "";
+async function cepLookup(){
+  const d = digits(S.cep); if(d.length!==8 || d===cepLast) return; cepLast = d;
+  const st = $("#cepSt"); const say = (m,c)=>{ cepMsg = m; cepCls = c||""; if(st){ st.textContent = m; st.className = "cepst "+cepCls; } };
+  say("Buscando endereço…");
+  try{
+    const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 6000);
+    const j = await (await fetch(`https://viacep.com.br/ws/${d}/json/`, {signal:ctl.signal})).json(); clearTimeout(tm);
+    if(j.erro){ say("CEP não encontrado. Confira ou preencha o endereço à mão.","err"); return; }
+    const wasDone = doneSnapshot[5];
+    if(j.logradouro) S.addr = j.logradouro; if(j.bairro) S.district = j.bairro; if(j.localidade) S.city = j.localidade+(j.uf?"/"+j.uf:"");
+    S.cep = fmtCep(d); save(); say("Endereço encontrado. Confira e complete o número.","ok");
+    render(t(S.addr) ? "u-num" : "u-addr"); checkPhaseDone(wasDone);
+  }catch(e){ say("Não consegui buscar o CEP agora. Preencha o endereço à mão.","err"); }
+}
+
 function achievements(){
   const P = profile();
   return [
@@ -907,7 +1024,7 @@ function achievements(){
     {n:"Perfil SELF", on:complete(2)},
     {n:"Bagagem", on:complete(3)},
     {n:"Estudioso", on:complete(4)},
-    {n:"Pronto pro jogo", on:complete(4) && !!t(S.name)}
+    {n:"Pronto pro jogo", on:complete(5)}
   ];
 }
 function discLine(P){ return P.p1 ? DISC[P.p1].nick + (P.p2 ? " + " + DISC[P.p2].nick : "") : ""; }
@@ -915,7 +1032,8 @@ function summaryText(){
   const P = profile(), pos = posOf(S.pos);
   const L = [];
   L.push(`*${PROGRAM} · ${EPISODE}*`, `_${HUD_TITLE}_`, "");
-  if(t(S.name)) L.push("*Nome:* "+t(S.name)); if(t(S.phone)) L.push("*WhatsApp:* "+t(S.phone));
+  if(t(S.name)) L.push("*Nome:* "+t(S.name)); if(t(S.phone)) L.push("*WhatsApp:* "+t(S.phone)); if(t(S.email)) L.push("*E-mail:* "+t(S.email));
+  if(t(S.city)) L.push("*Cidade:* "+t(S.city)+(cepOk()?" · CEP "+fmtCep(S.cep):""));
   L.push("*Vaga:* "+(pos?pos.title:"-"), "");
   L.push("*Por que este time:* "+[...S.why.tags, t(S.why.text)].filter(Boolean).join(" · "), "");
   L.push(`*Perfil SELF:* ${P.code} (${discLine(P)})`);
@@ -923,15 +1041,16 @@ function summaryText(){
   L.push(`*Locus:* ${P.lcCat} · *Emoções (IE):* ${P.ieCat} · *Motivação:* ${P.mot?MOT[P.mot].name:"-"}`, "");
   L.push("*Experiência:*"); if(S.exp.first) L.push("Primeiro emprego"); else S.exp.list.filter(expOk).forEach(r=>L.push(`${t(r.role)} na ${t(r.company)} (${tenure(r)})`)); L.push("");
   L.push("*Formação:*"); S.edu.list.filter(eduOk).forEach(r=>L.push(`${t(r.course)} · ${t(r.school)} (${t(r.year)})`));
+  if(S.video) L.push("", "_Envio também um vídeo de apresentação._");
   L.push("", "Resultado orientativo, baseado em "+NQ+" situações.");
   L.push("Faça você também: " + location.origin + "/selfpararh");
   return L.join("\n");
 }
 let confirmReset = false, showCopy = false;
-function screen5(){
+function screen6(){
   const x = xp(), P = profile(), pos = posOf(S.pos);
   return `<section class="stage"><div class="hero">
-    <div style="color:var(--f)">${ICON.trophy.replace("<svg",'<svg class="trophy"')}</div>
+    ${S.photo?`<img class="avatar" src="${S.photo}" alt="">`:`<div style="color:var(--f)">${ICON.trophy.replace("<svg",'<svg class="trophy"')}</div>`}
     <div class="eyebrow">Fase ${LAST} · Troféu</div>
     <h2 style="font-size:clamp(26px,8vw,36px)">Jornada concluída</h2>
     <p class="intro" style="text-align:center">Nível ${levelOf(x)} · ${esc(rankOf(x))} · ${x} XP</p>
@@ -948,12 +1067,12 @@ function screen5(){
     <div class="badges">${achievements().map(a=>`<div class="ach ${a.on?"on":""}">${ICON.star}${a.n}</div>`).join("")}</div>
     <div class="export">
       <h3>Envie sua candidatura</h3>
-      <label class="fld"><span>Seu nome <em>(aparece nos relatórios)</em></span><input id="u-name" data-bind="name" class="${filled(S.name)}" value="${esc(S.name)}" placeholder="Nome e sobrenome"></label>
-      <label class="fld"><span>Seu WhatsApp <em>(opcional, para o RH falar com você)</em></span><input id="u-phone" data-bind="phone" inputmode="tel" class="${filled(S.phone)}" value="${esc(S.phone)}" placeholder="(11) 90000-0000"></label>
+      <p class="hint">${esc(t(S.name))} · ${esc(t(S.phone))} · ${esc(t(S.email))}</p>
       <div class="opts">
         <button class="opt" data-act="card"><span class="oi" style="background:var(--d)">${ICON.phone}</span><span><b>Relatório na tela</b><span class="od">Resumo do tamanho do celular. Tire um print ou salve como imagem.</span></span></button>
         <button class="opt" data-act="pdf" id="pdfBtn"><span class="oi" style="background:var(--f)">${ICON.doc}</span><span><b>PDF completo</b><span class="od">Relatório detalhado para salvar, mandar no WhatsApp ou por e-mail.</span></span></button>
         <a class="opt" id="waBtn" href="https://wa.me/?text=${encodeURIComponent(summaryText())}" target="_blank" rel="noopener"><span class="oi" style="background:#25D366">${ICON.chat}</span><span><b>Resumo pelo WhatsApp</b><span class="od">Texto pronto para enviar ao RH ou à loja.</span></span></a>
+        ${S.video?`<button class="opt" data-act="video"><span class="oi" style="background:var(--e)">${IVID}</span><span><b>Vídeo de apresentação</b><span class="od">Salve ou compartilhe o vídeo para anexar na conversa com o RH.</span></span></button>`:""}
       </div>
       <button class="btn ghost wide small" data-act="copy">Copiar resumo em texto</button>
       <p class="status" id="pdfStatus">Seus dados ficam só neste celular. Você decide se e com quem compartilhar.</p>
@@ -967,7 +1086,7 @@ function screen5(){
 }
 
 /* ---------- render ---------- */
-const SCREENS = [screen0,screen1,screen2,screen3,screen4,screen5];
+const SCREENS = [screen0,screen1,screen2,screen3,screen4,screen5,screen6];
 let doneSnapshot = [];
 function render(focusId){
   const app = $("#app");
@@ -1007,8 +1126,7 @@ function checkPhaseDone(wasDone){
 function setBind(path, v){
   const p = path.split(".");
   if(p[0]==="why") S.why[p[1]] = v;
-  else if(p[0]==="name") S.name = v;
-  else if(p[0]==="phone") S.phone = v;
+  else if(["name","phone","email","cep","addr","num","district","city"].includes(p[0])) S[p[0]] = v;
   else if(p[0]==="exp"){ const r = S.exp.list.find(r=>r.id===p[1]); if(r) r[p[2]] = v; }
   else if(p[0]==="edu"){ const r = S.edu.list.find(r=>r.id===p[1]); if(r) r[p[2]] = v; }
 }
@@ -1020,6 +1138,7 @@ const onEdit = e=>{
   el.classList.toggle("filled", !!t(el.value));
   const m = el.closest("[data-entry]");
   if(m){ const [k,id] = m.dataset.entry.split("."); const r = (k==="x"?S.exp:S.edu).list.find(r=>r.id===id); if(r) m.classList.toggle("ok", k==="x"?expOk(r):eduOk(r)); }
+  if(b==="cep") cepLookup();
   if(S.step===LAST){ const w=$("#waBtn"); if(w) w.href="https://wa.me/?text="+encodeURIComponent(summaryText()); }
   hud();
   checkPhaseDone(wasDone);
@@ -1065,6 +1184,10 @@ document.addEventListener("click", e=>{
   if(act==="start"){ track(S.step>=0 ? "episode_resume" : "episode_start"); return go(S.step>=0 ? S.step : 0); }
   if(act==="next"){ if(showMissing(S.step)) return; return go(S.step+1); }
   if(act==="back") return go(S.step-1);
+  if(act==="consent"){ const wasDone = doneSnapshot[5]; S.consent = !S.consent; save(); SND.play(S.consent?"yes":"click"); b.classList.toggle("on", S.consent); b.setAttribute("aria-pressed", S.consent); hud(); checkPhaseDone(wasDone); return; }
+  if(act==="rmphoto"){ S.photo = ""; save(); render(); return; }
+  if(act==="rmvideo"){ S.video = null; setVideo(null); save(); try{ VDB.del(); }catch(e){} render(); return; }
+  if(act==="video"){ shareVideo(); return; }
   if(act==="first"){ const wasDone = doneSnapshot[3]; S.exp.first = !S.exp.first; save(); SND.play(S.exp.first?"yes":"click"); render(); checkPhaseDone(wasDone); return; }
   if(act==="copy"){ track("report_copy");
     const txt = summaryText();
@@ -1079,7 +1202,7 @@ document.addEventListener("click", e=>{
   if(act==="cardsave"){ saveCardImage(); return; }
   if(act==="reset"){
     if(!confirmReset){ confirmReset = true; render(); return; }
-    S = blank(); confirmReset = false; lastXP = null; save(); render(); window.scrollTo(0,0); return;
+    S = blank(); setVideo(null); try{ VDB.del(); }catch(e){} confirmReset = false; lastXP = null; save(); render(); window.scrollTo(0,0); return;
   }
 });
 /* toast */
@@ -1175,6 +1298,15 @@ async function saveFile(blob, filename, title){
   setTimeout(()=>URL.revokeObjectURL(url), 5000);
   return "saved";
 }
+async function shareVideo(){
+  const st = $("#pdfStatus"); const say = m => { if(st) st.textContent = m; };
+  if(!VIDEO.blob){ say("O vídeo não está mais neste aparelho. Grave de novo na fase Dados."); return; }
+  const ext = (VIDEO.blob.type||"").includes("quicktime") ? "mov" : (VIDEO.blob.type||"").includes("webm") ? "webm" : "mp4";
+  const slug = (t(S.name)||"participante").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"-").replace(/^-|-$/g,"");
+  const r = await saveFile(VIDEO.blob, `Video-SELF-para-RH-${slug}.${ext}`, "Meu vídeo de apresentação");
+  say(r==="shared" ? "Vídeo compartilhado." : r==="cancel" ? "Envio cancelado." : "Vídeo salvo. Anexe na conversa com o RH.");
+  track("report_video",{method:r});
+}
 /* ---------- relatório na tela ---------- */
 function cardHTML(){
   const x = xp(), P = profile(), now = new Date(), pos = posOf(S.pos);
@@ -1184,7 +1316,7 @@ function cardHTML(){
     <div class="rc-top"><div class="lg"><img src="${LOGO_MARK}" alt=""><img src="${LOGO_WORD}" alt="Proselling"></div>
       <div class="dt">${now.toLocaleDateString("pt-BR")}<br>${now.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}</div></div>
     <div class="rc-title"><div class="k">${PROGRAM} · ${HUD_TITLE}</div><h3>${EPISODE}</h3></div>
-    <div class="rc-who"><b>${esc(t(S.name)||"Participante")}</b><span class="rc-pill">${esc(pos?pos.title:"Vaga")}</span></div>
+    <div class="rc-who"><span class="nm">${S.photo?`<img class="ph" src="${S.photo}" alt="">`:""}<b>${esc(t(S.name)||"Participante")}</b></span><span class="rc-pill">${esc(pos?pos.title:"Vaga")}</span></div>
     <div class="rc-hero"><div class="n">${esc(P.code)}</div><p>Perfil SELF · ${esc(discLine(P))}<small>Nív ${levelOf(x)} · ${x} XP · ${ach}/6 conquistas</small></p></div>
     <div class="rc-disc">${"DISC".split("").map(k=>`<div>${discB(k)}<span>${P.pct[k]}%</span></div>`).join("")}</div>
     <div class="rc-3">
@@ -1195,7 +1327,7 @@ function cardHTML(){
     <div class="rc-sec"><div class="rc-l">Por que este time</div><div class="rc-v">${esc([...S.why.tags, t(S.why.text)].filter(Boolean).join(" · "))}</div></div>
     <div class="rc-sec"><div class="rc-l">Experiência</div><div class="rc-v">${S.exp.first ? "Primeiro emprego" : esc(X.slice(0,2).map(r=>`${t(r.role)} · ${t(r.company)} (${tenure(r)})`).join(" | "))}</div></div>
     <div class="rc-sec"><div class="rc-l">Formação</div><div class="rc-v">${esc(D.slice(0,2).map(r=>`${t(r.course)} · ${t(r.school)} (${t(r.year)})`).join(" | "))}</div></div>
-    ${t(S.phone)?`<div class="rc-sec"><div class="rc-l">WhatsApp</div><div class="rc-v">${esc(S.phone)}</div></div>`:""}
+    <div class="rc-sec"><div class="rc-l">Contato</div><div class="rc-v">${esc([t(S.phone), t(S.email), t(S.city)].filter(Boolean).join(" · "))}</div></div>
     <div class="rc-foot"><span>Resultado orientativo · ${NQ} situações</span><span>proselling</span></div>
     <div class="rc-strip"><i style="background:var(--f)"></i><i style="background:var(--d)"></i><i style="background:var(--e)"></i><i style="background:var(--m)"></i></div>
   </div>`;
@@ -1264,13 +1396,18 @@ function buildPDF(){
 
   // participante + gamificação
   const x = xp();
-  font("normal",8); color(RGB.muted); doc.text("CANDIDATO(A)", M, y, {charSpace:.5});
-  font("bold",13); color(RGB.ink); doc.text(T(t(S.name)||"Não informado"), M, y+6.5);
-  if(t(S.phone)){ font("normal",9); color(RGB.muted); doc.text(T("WhatsApp: "+t(S.phone)), M, y+11.5); }
+  let nx = M;
+  if(S.photo){ try{ doc.addImage(S.photo,"JPEG",M,y-3,22,22,"photo","FAST"); nx = M+26; }catch(e){} }
+  font("normal",8); color(RGB.muted); doc.text("CANDIDATO(A)", nx, y, {charSpace:.5});
+  font("bold",13); color(RGB.ink); doc.text(T(t(S.name)||"Não informado"), nx, y+6.5);
+  font("normal",8.5); color(RGB.muted);
+  doc.text(T([t(S.phone)?"WhatsApp "+t(S.phone):"", t(S.email)].filter(Boolean).join("  ·  ")), nx, y+11.5);
+  doc.text(doc.splitTextToSize(T(addrLine()), W-M-nx-62).slice(0,2), nx, y+15.6);
+  if(S.video){ doc.text(T("Enviou vídeo de apresentação (arquivo à parte)"), nx, y+23.4); }
   const pills = [[T(`NÍVEL ${levelOf(x)}`), RGB.F, RGB.ink],[T(rankOf(x).toUpperCase()), RGB.navy, RGB.white],[`${x.toLocaleString("pt-BR")} XP`, RGB.M, RGB.ink]];
   font("bold",8); let px = W - M;
   pills.slice().reverse().forEach(([txt,bg,fg])=>{ const w = doc.getTextWidth(txt)+8; px -= w; fill(bg); doc.roundedRect(px,y-1,w,7.5,3.75,3.75,"F"); color(fg); doc.text(txt, px+w/2, y+3.9, {align:"center"}); px -= 2.5; });
-  y += 16;
+  y += S.photo ? 24 : 22;
   font("bold",7); let ax = M;
   achievements().forEach(a=>{ const txt = T(a.n.toUpperCase()); const w = doc.getTextWidth(txt)+6;
     if(a.on){ fill([255,244,214]); draw(RGB.F); } else { fill(RGB.soft); draw(RGB.line); }
