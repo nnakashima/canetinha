@@ -3,6 +3,11 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.2.0] — 2026-10-17
+### Adicionado
+- Protótipo do episódio **SELF para RH** em `/selfpararh` ("Quero Jogar no Time"): abertura com as letras S E L F, carrossel de vagas (Artista de Sanduíche, Gerente), motivos com chips, 5 situações no modelo SELF 4D, experiência (ou primeiro emprego), formação e troféu com perfil SELF, relatório na tela, PDF e resumo pelo WhatsApp. Voz em todos os campos e eventos GA4. Ver [docs/episodio-self-para-rh.md](docs/episodio-self-para-rh.md).
+- O card do hub segue "Em breve!" durante a avaliação.
+
 ## [1.1.1] — 2026-10-17
 ### Alterado
 - Prévia do link de episódios "Em breve!": quando existe `public/assets/og-<slug>.jpg`, o link `/<slug>` usa essa imagem no WhatsApp e redes (antes mostrava sempre a capa do hub, com a Matriz FDEM).
