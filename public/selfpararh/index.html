@@ -587,6 +587,7 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 (function(){
 "use strict";
 const EP_ID="selfpararh";
+const APP_VERSION="__VERSION__";
 const track=(n,p)=>{ try{ if(typeof window.gtag==="function") window.gtag("event", n, Object.assign({episode_id:EP_ID}, p||{})); }catch(e){} };
 
 const KEY = "selfpararh-v1";
@@ -1971,6 +1972,17 @@ function buildPDF(){
     font("bold",7.5); color(RGB.ink); doc.text("Proselling", M+5.5, H-7.8);
     font("normal",7.5); color(RGB.muted); doc.text(T(`  ·  ${PROGRAM} · Episódio ${EPISODE}  ·  ${dStr} ${hStr}`), M+5.5+doc.getTextWidth("Proselling")+.5, H-7.8);
     doc.text(T(`Página ${i} de ${n}`), W-M, H-7.8, {align:"right"}); }
+  // dados para leitura automática pelo RH Seleção (propriedades do PDF, texto ASCII)
+  try{
+    const meta = {v:1, code:selfCode(), name:t(S.name), phone:t(S.phone), email:t(S.email), city:t(S.city),
+      pos: pos ? pos.code : "", posTitle: pos ? pos.title : "", why:S.why.tags.slice(0,8), first:!!S.exp.first,
+      exp: S.exp.first ? [] : S.exp.list.filter(expOk).slice(0,6).map(r=>({company:t(r.company), role:t(r.role), tenure:tenure(r)})),
+      edu: S.edu.list.filter(eduOk).slice(0,4).map(r=>({course:t(r.course), school:t(r.school), year:t(r.year)})),
+      date: now.toISOString(), app: "selfpararh-" + APP_VERSION};
+    doc.setProperties({title: T(`SELF para RH - ${t(S.name)||"Candidato(a)"}`), subject: "Relatorio SELF para RH",
+      author: "Proselling - Canetinha Magica", creator: "Canetinha Magica - SELF para RH",
+      keywords: "selfrh1:" + encodeURIComponent(JSON.stringify(meta))});
+  }catch(e){}
   return doc;
 }
 async function exportPDF(){

@@ -5,14 +5,16 @@
 Série de mini web apps gamificados ("episódios"), pensados para o celular e divulgados por link no WhatsApp. Um hub no estilo streaming reúne os episódios em prateleiras.
 
 - **Produção:** https://canetinha.metamode.com.br
-- **Versão atual:** 1.10.0 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
+- **Versão atual:** 1.11.0 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
 - **Repositório:** github.com/nnakashima/canetinha → deploy automático no Railway a cada push em `main`
 
 | Endereço | O que abre |
 |---|---|
 | `/` | Hub (vitrine com prateleiras Gestão e Lançamentos) |
 | `/matrizfdem` | Episódio 01 · Matriz FDEM (Administração do Tempo) |
-| `/selfpararh` | Episódio SELF para RH ("Quero Jogar no Time") |
+| `/selfpararh` | Episódio 02 · SELF para RH ("Quero Jogar no Time") |
+| `/rhselecao` | Episódio 03 · RH Seleção, ferramenta do gestor (no hub ainda como "Em breve!") |
+| `POST /api/rhselecao` | Análise de aderência do RH Seleção (só códigos anônimos) |
 | `/r5`, `/vendadecombo`, `/delivery`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas` | Hub com a ficha do episódio "Em breve!" aberta |
 | `/version` | Versão em JSON |
 | `/healthz` | Health check |
@@ -29,6 +31,9 @@ server.js                    servidor HTTP sem dependências (rotas, redireciona
 package.json                 versão do sistema (fonte única)
 public/index.html            hub (vitrine): catálogo EPISODES, capas ilustradas em SVG, abertura animada
 public/matrizfdem/index.html episódio 01 (jogo, relatórios, PDF, voz, som)
+public/selfpararh/index.html episódio 02 (SELF para RH)
+public/rhselecao/index.html  episódio 03 (RH Seleção, ferramenta do gestor)
+lib/rhselecao.js             regras de aderência do RH Seleção (só no servidor)
 public/assets/               favicon, ícone iOS e imagens de prévia de link (og-*.jpg, 1200×630)
 public/robots.txt
 docs/                        documentação detalhada
@@ -38,6 +43,8 @@ docs/                        documentação detalhada
 - [Arquitetura e rotas](docs/arquitetura.md): servidor, catálogo, variáveis injetadas, armazenamento local
 - [Design e identidade](docs/design.md): cores, tipografia, abertura, capas, gamificação, som
 - [Episódio Matriz FDEM](docs/episodio-matriz-fdem.md): fases, regras, relatórios, voz
+- [Episódio SELF para RH](docs/episodio-self-para-rh.md): fases, pontuação, auto-retrato, código para o RH
+- [Episódio RH Seleção](docs/episodio-rh-selecao.md): etapas, leitura dos PDFs, perfil-alvo, API, privacidade
 - [Analytics (GA4)](docs/analytics.md): parâmetros, eventos, dimensões, relatórios
 - [Operação](docs/operacao.md): deploy, domínio/DNS, versão, rollback, links antigos
 - [Como criar um novo episódio](docs/novo-episodio.md)

@@ -3,6 +3,19 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.11.0] — 2026-10-18
+### Adicionado
+- **RH Seleção** (`/rhselecao`), episódio 03 para o gestor, sem gamificação, em 5 etapas: seu negócio (12 perguntas em botões), a vaga, candidatos, análise e decisão.
+  - Lê os PDFs do SELF para RH no próprio navegador (pdf.js); aceita também o resumo do WhatsApp ou só o código S4D1. PDFs anteriores à 1.11 são lidos pelo texto.
+  - Perfil-alvo da vaga (4 prioridades com o "por quê"), aderência de cada candidato em faixas (Alta, Boa, Atenção), forças, pontos a explorar, 4 perguntas de entrevista e notas (encaixe com o líder, estilo que falta no time).
+  - Visões Individual, Comparar (2 a 5 lado a lado, com diferenças-chave) e Time (estilos do time atual).
+  - Decisão com motivos, lembrete de acompanhamento em 90 dias (continua/saiu), PDF do processo, resumo para o WhatsApp e cópia.
+  - Vários processos seletivos; tudo fica no aparelho, com exportar e importar arquivo.
+- API `POST /api/rhselecao`: recebe só contexto, vaga e códigos anônimos; as regras de aderência ficam no servidor (`lib/rhselecao.js`) e não aparecem no código da página.
+- Hub: RH Seleção na prateleira Gestão como "Em breve!", com capa própria; prévia do link `og-rhselecao.jpg`.
+### Alterado
+- SELF para RH: o PDF grava o perfil e os dados do candidato também nas propriedades do arquivo (`selfrh1:` nas palavras-chave), para leitura automática pelo RH Seleção.
+
 ## [1.10.0] — 2026-10-18
 ### Adicionado
 - Hub: **SELF para RH** sai do "Em breve!" e vira o episódio 02 (Recrutamento e seleção, 6 fases, ~12 min), com ficha completa, botão de assistir, progresso ("Fase X de 6"/"Concluído") e selo "Novo" (que sai da Matriz FDEM).

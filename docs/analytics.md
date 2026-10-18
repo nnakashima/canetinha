@@ -34,7 +34,13 @@ Todo evento customizado também leva `episode_id` (no hub, `hub`; o episódio cl
 | SELF para RH | `nps_answered` | `score` (0 a 10), `category` (promotor/neutro/detrator) |
 | SELF para RH | `code_copy` / `report_video` | — / `method` |
 | SELF para RH | `trophy_reached` | `xp`, `position` |
-Nenhum evento leva nome, contato, foto, vídeo, respostas da avaliação nem comentário do NPS.
+| RH Seleção | `rh_open` | `processos` |
+| RH Seleção | `rh_step` | `step` (1 a 5) |
+| RH Seleção | `rh_cand_add` | `method` (pdf/texto), `kind` (candidato/time), `n` |
+| RH Seleção | `rh_analise` | `candidatos`, `time` (quantidades) |
+| RH Seleção | `rh_compare` / `rh_decision` / `rh_follow` | — / `escolhidos` / `result` (ficou/saiu) |
+| RH Seleção | `rh_pdf` / `rh_whatsapp` / `rh_copy` / `rh_export` / `rh_import` / `rh_new_process` / `rh_reset` | `method` no PDF |
+Nenhum evento leva nome, contato, foto, vídeo, respostas da avaliação, códigos SELF, dados do negócio nem comentário do NPS.
 
 ## Definições personalizadas (Administrador → Definições personalizadas)
 | Nome | Escopo | Parâmetro | Situação |

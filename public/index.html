@@ -239,6 +239,7 @@ const EPISODES = {
     phases:"6 fases", time:"~12 min",
     desc:"Quero Jogar no Time! Escolha a vaga, conte o que te trouxe até aqui, mostre como você joga em situações do dia a dia da loja e receba o seu perfil SELF, com auto-retrato e código para o RH.",
     gets:[["S","var(--f)","Perfil SELF nas 4 dimensões: estilo, emoções, locus e motivação"],["E","var(--d)","Auto-retrato em linguagem simples"],["L","var(--e)","Código SELF para enviar ao RH da vaga"],["F","var(--m)","Relatório na tela, PDF e resumo para o WhatsApp"]] },
+  rhsel:{ title:"RH Seleção", slug:"rhselecao", status:"soon", a:"var(--d)", b:"var(--v)", art:"scene:rhselecao" },
   r5:{ title:"R5", slug:"r5", status:"soon", a:"var(--e)", b:"var(--f)", art:"scene:r5" },
   combo:{ title:"Venda de Combo", slug:"vendadecombo", status:"soon", a:"var(--f)", b:"var(--o)", art:"scene:combo" },
   delivery:{ title:"Delivery", slug:"delivery", status:"soon", a:"var(--d)", b:"var(--m)", art:"scene:delivery" },
@@ -248,7 +249,7 @@ const EPISODES = {
   teatro:{ title:"Teatro de Vendas", slug:"teatrodevendas", status:"soon", a:"var(--e)", b:"var(--v)", art:"scene:teatro" }
 };
 const SHELVES = [
-  { title:"Gestão", eps:["fdem","selfrh","r5","combo","delivery","lideranca"] },
+  { title:"Gestão", eps:["fdem","selfrh","rhsel","r5","combo","delivery","lideranca"] },
   { title:"Lançamentos", eps:["financas","marketing","teatro"] }
 ];
 const FEATURED = "fdem";
@@ -337,6 +338,24 @@ const confetti = (pts) => pts.map(([x,y,c,r])=>`<rect x="${x}" y="${y}" width="5
 const floatAnim = (dy, dur, begin) => REDUCED ? "" : `<animateTransform attributeName="transform" type="translate" additive="sum" values="0 0;0 ${dy}" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;.15;.7;1" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/>`;
 
 const SCENES = {
+  rhselecao: () => {
+    // gestor compara três fichas de candidatos; a escolhida ganha o selo verde
+    const card = (x, y, col, on, d) => `<g transform="translate(${x} ${y}) rotate(${d})"><rect x="0" y="0" width="70" height="40" rx="6" fill="#F4F1FF" stroke="${INK}" stroke-width="2.5"/>
+      <circle cx="15" cy="16" r="8" fill="${col}"/><circle cx="15" cy="13.5" r="3.2" fill="${INK}" opacity=".55"/><path d="M9 22q6-6 12 0" fill="${INK}" opacity=".55"/>
+      <rect x="28" y="10" width="34" height="5" rx="2.5" fill="${INK}" opacity=".75"/><rect x="28" y="19" width="24" height="4" rx="2" fill="#7D75B2"/>
+      ${[0,1,2].map(i=>`<circle cx="${12+i*9}" cy="32" r="3" fill="${i < (on?3:on===false?1:2) ? "#5BC236" : "#D9D4F2"}"/>`).join("")}
+      ${on?`<circle cx="66" cy="4" r="9" fill="#5BC236" stroke="${INK}" stroke-width="2.5"/><path d="M61.5 4l3 3 6-6" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:""}</g>`;
+    return `<rect x="0" y="0" width="200" height="300" fill="#100D26" opacity=".2"/>
+      ${[0,1,2,3,4,5,6,7,8,9].map(i=>`<rect x="${i*20}" y="0" width="10" height="196" fill="#fff" opacity=".035"/>`).join("")}
+      ${card(112,52,"#FF5C7A",null,-6)}${card(118,98,"#3DD6F5",true,3)}${card(110,144,"#FFC93C",false,-3)}
+      <path d="M98 74q-10 4-14 18M100 120h-12M98 162q-8-2-12-10" stroke="#F4F1FF" stroke-opacity=".5" stroke-width="2.5" stroke-dasharray="4 4" fill="none" stroke-linecap="round"/>
+      ${P({x:58,y:214,s:1.08,sh:"#9B7BFF",pa:INK,arms:"hips",tie:"#FFC93C",sk:SK[2],hr:HR[3],smile:"big"})}
+      <rect x="4" y="182" width="192" height="16" rx="4" fill="#B9651F"/><rect x="4" y="182" width="192" height="6" rx="3" fill="#F0943E"/>
+      <rect x="30" y="160" width="46" height="24" rx="3" fill="${INK}"/><rect x="33" y="163" width="40" height="17" rx="2" fill="#3DD6F5"/><rect x="24" y="182" width="58" height="4" rx="2" fill="#2D2762"/>
+      <rect x="37" y="167" width="20" height="3" rx="1.5" fill="#fff"/><rect x="37" y="173" width="30" height="3" rx="1.5" fill="#fff" opacity=".7"/>
+      <rect x="0" y="198" width="200" height="102" fill="#100D26" opacity=".35"/>
+      ${star(184,40,6,"#FFC93C")}${star(96,34,4,"#fff")}${star(16,90,5,"#8BE36A")}`;
+  },
   r5: () => {
     const cols = "GRGGRGG GGRGGGR RGGGRGG GGGRGGG".replace(/ /g,"").split("");
     let cells = "";

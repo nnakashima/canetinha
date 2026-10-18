@@ -17,6 +17,7 @@ navegador ──> cdnjs (jsPDF, jspdf-autotable, html2canvas) e Google Fonts (Bu
 | `GET /version` | `{"name","version","episodes"}` |
 | `GET /` | hub (`content_group=hub`) |
 | `GET /<slug>` com pasta `public/<slug>/` | episódio publicado (`content_group=episodio`) |
+| `POST /api/rhselecao` | análise do RH Seleção (JSON, até 64 KB, `Cache-Control: no-store`); regras em `lib/rhselecao.js` |
 | `GET /<slug>` sem pasta, mas no catálogo do hub | hub com a ficha aberta; título e prévia do episódio (`content_group=episodio_em_breve`) |
 | Maiúsculas ou barra final (`/R5`, `/r5/`) | 301 para a forma canônica (`/r5`) |
 | Endereços antigos (`LEGACY`) | 301 (ex.: `/matriz-fdem` → `/matrizfdem`) |

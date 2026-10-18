@@ -9,6 +9,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const zlib = require("zlib");
+const rhselecao = require("./lib/rhselecao");
 
 const PORT = process.env.PORT || 3000;
 const VERSION = require("./package.json").version;
@@ -86,6 +87,20 @@ function send(req, res, file, opts = {}) {
   res.end(req.method === "HEAD" ? undefined : body);
 }
 
+// RH Seleção: recebe só contexto, vaga e códigos S4D1 anônimos; devolve a análise (regras ficam aqui no servidor)
+function api(req, res) {
+  const out = (code, obj) => { res.writeHead(code, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" }); res.end(JSON.stringify(obj)); };
+  if (req.method !== "POST") return out(405, { erro: "Use POST." });
+  let size = 0; const chunks = [];
+  req.on("data", c => { size += c.length; if (size > 65536) { out(413, { erro: "Pedido grande demais." }); req.destroy(); } else chunks.push(c); });
+  req.on("end", () => {
+    if (res.writableEnded) return;
+    let body;
+    try { body = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}"); } catch { return out(400, { erro: "JSON inválido." }); }
+    try { out(200, rhselecao.run(body)); } catch (e) { console.error("rhselecao", e); out(500, { erro: "Falha na análise." }); }
+  });
+}
+
 function redirect(res, to, code = 301) { res.writeHead(code, { Location: to }); res.end(); }
 
 http.createServer((req, res) => {
@@ -94,6 +109,7 @@ http.createServer((req, res) => {
     res.writeHead(200, { "Content-Type": "application/json", "Cache-Control": "no-cache" });
     return res.end(JSON.stringify({ name: "canetinha", version: VERSION, episodes: Object.keys(EPISODES) }));
   }
+  if (req.url === "/api/rhselecao") return api(req, res);
   if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405); return res.end(); }
 
   const [rawPath, query] = req.url.split("?");
