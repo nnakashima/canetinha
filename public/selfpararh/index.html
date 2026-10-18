@@ -292,7 +292,8 @@ input.need,textarea.need{border-color:var(--f);animation:shake .4s}
 @keyframes letterIn{0%{opacity:0;transform:translateY(30px) scale(.4) rotate(12deg)}100%{opacity:1;transform:none}}
 .sp-stroke{width:min(320px,86%);height:auto;overflow:visible;margin-top:-4px}
 .sp-stroke path{fill:none;stroke:url(#penGrad);stroke-width:7;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:0;animation:draw 1s cubic-bezier(.6,0,.3,1) 2s both}
-.sp-stroke circle{fill:var(--fg);animation:twinkle 1.6s ease-in-out 3s infinite both}
+.sp-stroke circle{fill:var(--fg);opacity:0;animation:dotIn .3s ease 2.9s forwards,twinkle 1.6s ease-in-out 3.3s infinite}
+@keyframes dotIn{from{opacity:0}to{opacity:1}}
 @keyframes draw{0%{stroke-dashoffset:420}100%{stroke-dashoffset:0}}
 @keyframes twinkle{0%,100%{opacity:1;transform-origin:center}50%{opacity:.2}}
 .sp-ep{display:inline-flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:99px;background:var(--surface);border:2px solid var(--line);animation:fadeUp .5s 2.8s both}
@@ -1484,7 +1485,7 @@ function screen6(){
     <p class="disc">Retrato do seu jeito de trabalhar hoje, a partir de ${NQ} situações. Não é nota, nem aprovação ou reprovação.</p>
     ${(()=>{ const R = portrait(); return R ? `<div class="badges">${R.cards.map(c=>`<div class="ach on q-${c.c} ${c.long?"long":""}">${c.c==="ok"?ICON.check:ICON.star}<span class="qk">${c.k}</span><span class="qv">${esc(c.v)}</span></div>`).join("")}</div>` : ""; })()}
     <div class="nps" id="nps">
-      <h3>Como foi essa experiência?</h3>
+      <h3>Como foi esta experiência?</h3>
       <p class="hint">De 0 a 10, quanto você indicaria esta jornada para um amigo?</p>
       <div class="nps-row">${[0,1,2,3,4,5,6,7,8,9,10].map(n=>`<button class="nps-b ${n<=6?"lo":n<=8?"mid":"hi"} ${S.nps===n?"on":""}" data-nps="${n}" aria-pressed="${S.nps===n}">${n}</button>`).join("")}</div>
       <div class="nps-lg"><span>Nada provável</span><span>Muito provável</span></div>

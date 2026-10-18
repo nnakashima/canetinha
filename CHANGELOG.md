@@ -3,6 +3,11 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.9.2] — 2026-10-17
+### Corrigido
+- Abertura (Matriz FDEM e SELF para RH): os dois pontinhos brancos do traço de caneta apareciam soltos na tela antes do título e do traço. Agora surgem só depois que o traço termina de ser desenhado.
+- SELF para RH: pergunta do NPS passa a ser "Como foi esta experiência?".
+
 ## [1.9.1] — 2026-10-17
 ### Corrigido
 - Microfone no iPhone (Matriz FDEM e SELF para RH): volta a usar primeiro o reconhecimento de voz do Safari, que funcionava na Matriz FDEM (a 1.8.0 tinha trocado direto pelo ditado do teclado). Se o reconhecimento falhar ou não responder em 8 s, aparece a folha "Fale pelo teclado", que abre o teclado no campo e mostra onde fica o microfone.
