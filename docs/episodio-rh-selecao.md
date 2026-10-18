@@ -6,6 +6,9 @@ Ferramenta do gestor que vai contratar. Sem gamificação: o gestor descreve o n
 - Arquivo: `public/rhselecao/index.html` · regras: `lib/rhselecao.js` · rota: `POST /api/rhselecao` em `server.js`
 - Armazenamento: `localStorage` com a chave `rhselecao-v1` (negócio, processos, candidatos, anotações, decisões)
 
+## Capa
+Abre no início de cada sessão do navegador (`sessionStorage` `rh-cover`) e ao tocar no logo: título, frase-guia e o fluxo em 5 passos (setas horizontais no laptop, lista no celular). Evento GA4 `rh_start` (`novo` quando o gestor escolhe "Nova vaga").
+
 ## Etapas
 | # | Etapa | Obrigatório para avançar |
 |---|---|---|

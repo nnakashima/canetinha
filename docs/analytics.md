@@ -35,6 +35,7 @@ Todo evento customizado também leva `episode_id` (no hub, `hub`; o episódio cl
 | SELF para RH | `code_copy` / `report_video` | — / `method` |
 | SELF para RH | `trophy_reached` | `xp`, `position` |
 | RH Seleção | `rh_open` | `processos` |
+| RH Seleção | `rh_start` | `novo` (true quando abre uma nova vaga pela capa) |
 | RH Seleção | `rh_step` | `step` (1 a 5) |
 | RH Seleção | `rh_cand_add` | `method` (pdf/texto), `kind` (candidato/time), `n` |
 | RH Seleção | `rh_analise` | `candidatos`, `time` (quantidades) |

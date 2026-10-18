@@ -230,6 +230,22 @@ table.cmp{border-collapse:separate;border-spacing:0;width:100%;min-width:560px;f
 .sheet h3{font-size:18px;margin-bottom:8px}
 .sheet p,.sheet li{color:var(--muted);font-size:14.5px}
 .sheet .btn{width:100%;margin-top:10px}
+/* capa */
+.cover{padding:34px 0 8px;max-width:1120px;margin:0 auto}
+.cover .kick{font-size:13px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--d)}
+.cover h1{font-size:clamp(30px,5.6vw,52px);line-height:1.08;margin:12px 0 16px;max-width:20ch}
+.cover h1 b{font-weight:400;color:var(--f)}
+.cover .quote{font-size:clamp(17px,2.3vw,22px);line-height:1.45;color:var(--muted);max-width:52ch;border-left:4px solid var(--f);padding-left:16px;font-weight:700}
+.cover .quote em{font-style:normal;color:var(--fg)}
+.flow{list-style:none;padding:0;margin:34px 0 0;display:grid;gap:10px}
+.flow li{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.chev{height:52px;display:grid;place-items:center;font-weight:900;font-size:15.5px;color:#fff;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 50%,calc(100% - 18px) 100%,0 100%);padding-right:12px}
+.flow li:not(:first-child) .chev{clip-path:polygon(0 0,calc(100% - 18px) 0,100% 50%,calc(100% - 18px) 100%,0 100%,18px 50%);padding-left:12px}
+.flow p{color:var(--muted);font-size:15px;line-height:1.35}
+@media(min-width:860px){.flow{grid-template-columns:repeat(5,minmax(0,1fr));gap:0 4px}.flow li{grid-template-columns:1fr;gap:12px;align-items:start}.chev{height:62px;font-size:17px}.flow p{text-align:center;padding:0 10px}}
+.cover .acts{margin-top:34px}
+.cover .btn{font-size:17px;padding:15px 26px}
+.cover .meta{color:var(--dim);font-size:13.5px;margin-top:14px}
 .foot{margin:40px auto 0;max-width:1120px;display:flex;gap:10px;align-items:center;color:var(--dim);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
 .foot img{height:16px}
 @media(max-width:520px){.brand .t small{display:none}.iconbtn span{display:none}.bar{grid-template-columns:92px 1fr 36px}}
@@ -239,7 +255,7 @@ table.cmp{border-collapse:separate;border-spacing:0;width:100%;min-width:560px;f
 <body>
 <header class="top">
   <div class="top-in">
-    <div class="brand"><img src="" id="lgMark" alt=""><div class="t"><b>RH Seleção</b><small>Canetinha Mágica · Episódio 03</small></div></div>
+    <div class="brand" data-act="cover" role="button" tabindex="0" style="cursor:pointer" aria-label="Capa do RH Seleção"><img src="" id="lgMark" alt=""><div class="t"><b>RH Seleção</b><small>Canetinha Mágica · Episódio 03</small></div></div>
     <div class="sp"></div>
     <button class="iconbtn" data-act="menu" aria-haspopup="true" aria-label="Arquivo do processo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Arquivo</span></button>
   </div>
@@ -515,10 +531,26 @@ function screen4(){
 }
 
 /* ---------- render ---------- */
+/* ---------- capa ---------- */
+let showCover = true;
+try{ showCover = !sessionStorage.getItem("rh-cover"); }catch(e){}
+const FLOW = [["Candidato","Faz o SELF para RH no celular e envia o PDF","#2A4F86"],["Negócio","Gestor descreve a loja uma vez: 12 perguntas","#1F5FAD"],
+  ["Vaga","Posição, turno, quantidade e líder","#3B78C2"],["Análise","Perfil-alvo, faixas, comparação e perguntas","#6F96CF"],["Decisão","Escolha, motivos e acompanhamento em 90 dias","#2E8B57"]];
+function screenCover(){
+  const p = P(), started = complete(0) || p.cands.length;
+  return `<section class="cover"><div class="kick">Canetinha Mágica · Episódio 03</div>
+    <h1>RH Seleção: como escolher quem <b>encaixa</b> na sua operação</h1>
+    <p class="quote">Não pergunte <em>“quem é o melhor candidato”</em>, mas <em>“quem melhor se encaixa nesta vaga, nesta loja, agora”</em> e principalmente sabendo o porquê.</p>
+    <ol class="flow" aria-label="Como funciona">${FLOW.map(([t,d,c])=>`<li><span class="chev" style="background:${c}">${t}</span><p>${d}</p></li>`).join("")}</ol>
+    <div class="acts"><button class="btn" data-act="start">${started ? `Continuar: ${STEP_NAMES[Math.max(0,S.step)]}` : "Começar"}</button>${started?`<button class="btn sec" data-act="startnew">Nova vaga</button>`:""}</div>
+    <p class="meta">Dados dos candidatos ficam neste aparelho · ferramenta de apoio: a decisão é sua.</p></section>`;
+}
 const SCREENS = [screen0, screen1, screen2, screen3, screen4];
 const STEP_NAMES = ["Negócio","Vaga","Candidatos","Análise","Decisão"];
 function render(){
   const i = S.step;
+  $("#steps").hidden = showCover;
+  if(showCover){ $("#app").className = "wrap wide"; $("#app").innerHTML = screenCover(); return; }
   $("#app").className = "wrap" + (i===3 ? " wide" : "");
   const doneK = k => k===4 ? !!P().dec.data : k<i && complete(k);
   $("#steps").innerHTML = STEP_NAMES.map((n,k)=>`<button class="step${k===i?" cur":doneK(k)?" done":""}" data-go="${k}" ${reach(k)?"":"disabled"} aria-current="${k===i?"step":"false"}"><i></i><span>${k+1}. ${n}</span></button>`).join("");
@@ -840,6 +872,10 @@ document.addEventListener("click", e=>{
   if(ds.mot){ const i = p.dec.motivos.indexOf(ds.mot); if(i>=0) p.dec.motivos.splice(i,1); else p.dec.motivos.push(ds.mot); save(); const y = scrollY; render(); scrollTo(0,y); return; }
   if(ds.follow){ p.dec.follow[ds.follow] = ds.v; save(); render(); track("rh_follow", {result:ds.v}); return; }
   switch(ds.act){
+    case "cover": showCover = true; render(); scrollTo(0,0); return;
+    case "start": case "startnew": showCover = false; try{ sessionStorage.setItem("rh-cover","1"); }catch(e){}
+      if(ds.act==="startnew"){ const np = blankProc(); S.procs.push(np); S.cur = np.id; S.step = complete(0) ? 1 : 0; save(); }
+      track("rh_start", {novo:ds.act==="startnew"}); render(); scrollTo(0,0); return;
     case "menu": e.stopPropagation(); return $("#menu") ? closeMenu() : openMenu(b);
     case "export": closeMenu(); return exportData();
     case "import": closeMenu(); return $("#impIn").click();
@@ -861,7 +897,7 @@ document.addEventListener("click", e=>{
     case "copysum": track("rh_copy"); return copyText(summaryText(), "Resumo copiado.");
   }
 });
-document.addEventListener("keydown", e=>{ if((e.key==="Enter"||e.key===" ") && e.target.id==="drop"){ e.preventDefault(); $("#pdfIn").click(); } if(e.key==="Escape"){ closeMenu(); closeSheet(); } });
+document.addEventListener("keydown", e=>{ if((e.key==="Enter"||e.key===" ") && e.target.closest && e.target.closest(".brand")){ e.preventDefault(); showCover = true; render(); return; } if((e.key==="Enter"||e.key===" ") && e.target.id==="drop"){ e.preventDefault(); $("#pdfIn").click(); } if(e.key==="Escape"){ closeMenu(); closeSheet(); } });
 $("#pdfIn").addEventListener("change", e=>{ const f = e.target.files; if(f && f.length) onFiles(f, "c"); e.target.value = ""; });
 $("#teamIn").addEventListener("change", e=>{ const f = e.target.files; if(f && f.length) onFiles(f, "t"); e.target.value = ""; });
 $("#impIn").addEventListener("change", e=>{ const f = e.target.files && e.target.files[0]; if(f) importData(f); e.target.value = ""; });

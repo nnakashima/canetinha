@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.11.1] — 2026-10-18
+### Adicionado
+- RH Seleção: capa de abertura com o título "como escolher quem encaixa na sua operação", a frase-guia ("quem melhor se encaixa nesta vaga, nesta loja, agora, e sabendo o porquê") e o fluxo em 5 passos (Candidato, Negócio, Vaga, Análise, Decisão). Aparece no início de cada sessão; o logo no topo volta para ela. Botões "Começar", ou "Continuar" e "Nova vaga" quando já há um processo.
+
 ## [1.11.0] — 2026-10-18
 ### Adicionado
 - **RH Seleção** (`/rhselecao`), episódio 03 para o gestor, sem gamificação, em 5 etapas: seu negócio (12 perguntas em botões), a vaga, candidatos, análise e decisão.
