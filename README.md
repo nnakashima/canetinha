@@ -5,14 +5,15 @@
 Série de mini web apps gamificados ("episódios"), pensados para o celular e divulgados por link no WhatsApp. Um hub no estilo streaming reúne os episódios em prateleiras.
 
 - **Produção:** https://canetinha.metamode.com.br
-- **Versão atual:** 1.9.2 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
+- **Versão atual:** 1.10.0 (veja o [CHANGELOG](CHANGELOG.md)), disponível em `/version` e no rodapé das páginas
 - **Repositório:** github.com/nnakashima/canetinha → deploy automático no Railway a cada push em `main`
 
 | Endereço | O que abre |
 |---|---|
 | `/` | Hub (vitrine com prateleiras Gestão e Lançamentos) |
 | `/matrizfdem` | Episódio 01 · Matriz FDEM (Administração do Tempo) |
-| `/selfpararh`, `/r5`, `/vendadecombo`, `/delivery`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas` | Hub com a ficha do episódio "Em breve!" aberta |
+| `/selfpararh` | Episódio SELF para RH ("Quero Jogar no Time") |
+| `/r5`, `/vendadecombo`, `/delivery`, `/lideranca`, `/financasbasico`, `/marketingdigital`, `/teatrodevendas` | Hub com a ficha do episódio "Em breve!" aberta |
 | `/version` | Versão em JSON |
 | `/healthz` | Health check |
 

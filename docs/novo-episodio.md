@@ -1,5 +1,7 @@
 # Como criar um novo episódio
 
+**Padrão atual:** o episódio SELF para RH (`public/selfpararh/index.html`) é a referência de qualidade para os próximos (fase de dados com câmera e CEP, voz com reserva pelo teclado, retrato e auto-retrato, NPS, relatório na tela completo, PDF em 2 páginas, GA4 sem dados pessoais). A skill "canetinha-magica-episodio" descreve esse padrão passo a passo.
+
 Há também uma skill no Claude ("canetinha-magica-episodio") que segue este roteiro.
 
 1. **Material:** leia o documento de origem e mapeie cada passo para uma fase; defina a mecânica central (equivalente ao Juízo) e o "número-tesouro" do resultado final.

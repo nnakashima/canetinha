@@ -229,12 +229,16 @@ const LOGO_WORD = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgQAAACwCAYAAAB
 
 /* ---------- catálogo: para lançar um episódio, mude status para "live" e preencha url ---------- */
 const EPISODES = {
-  fdem:{ title:"Matriz FDEM", slug:"matrizfdem", num:1, status:"live", isNew:true, url:"/matrizfdem", store:"matriz-fdem-v1",
+  fdem:{ title:"Matriz FDEM", slug:"matrizfdem", num:1, status:"live", url:"/matrizfdem", store:"matriz-fdem-v1", last:6,
     subject:"Administração do Tempo", a:"var(--v)", b:"var(--d)", art:"scene:fdem",
     phases:"6 fases", time:"~15 min",
     desc:"Descubra para onde vão suas horas. Classifique cada atividade em Foco, Delegável, Eliminável ou Melhorável e resgate tempo para o que te leva ao seu objetivo.",
     gets:[["F","var(--f)","Diagnóstico F/D/E/M da sua rotina"],["D","var(--d)","Plano de ação com prazos e responsáveis"],["E","var(--e)","Horas por mês que você vai recuperar"],["M","var(--m)","Relatório na tela, PDF e resumo para o WhatsApp"]] },
-  selfrh:{ title:"SELF para RH", slug:"selfpararh", status:"soon", a:"var(--v)", b:"var(--e)", art:"scene:selfrh" },
+  selfrh:{ title:"SELF para RH", slug:"selfpararh", num:2, status:"live", isNew:true, url:"/selfpararh", store:"selfpararh-v1", last:6,
+    subject:"Recrutamento e seleção", a:"var(--v)", b:"var(--e)", art:"scene:selfrh",
+    phases:"6 fases", time:"~12 min",
+    desc:"Quero Jogar no Time! Escolha a vaga, conte o que te trouxe até aqui, mostre como você joga em situações do dia a dia da loja e receba o seu perfil SELF, com auto-retrato e código para o RH.",
+    gets:[["S","var(--f)","Perfil SELF nas 4 dimensões: estilo, emoções, locus e motivação"],["E","var(--d)","Auto-retrato em linguagem simples"],["L","var(--e)","Código SELF para enviar ao RH da vaga"],["F","var(--m)","Relatório na tela, PDF e resumo para o WhatsApp"]] },
   r5:{ title:"R5", slug:"r5", status:"soon", a:"var(--e)", b:"var(--f)", art:"scene:r5" },
   combo:{ title:"Venda de Combo", slug:"vendadecombo", status:"soon", a:"var(--f)", b:"var(--o)", art:"scene:combo" },
   delivery:{ title:"Delivery", slug:"delivery", status:"soon", a:"var(--d)", b:"var(--m)", art:"scene:delivery" },
@@ -575,8 +579,9 @@ function cardHTML(id){
 function progress(ep){
   if(!ep.store) return null;
   try{ const o = JSON.parse(localStorage.getItem(ep.store) || "null"); if(!o) return null;
-    if(o.step >= 6) return {done:true, label:"Concluído ✓"};
-    if(o.step >= 0) return {label:`Fase ${o.step} de 6`}; }catch(e){}
+    const last = ep.last || 6;
+    if(o.step >= last) return {done:true, label:"Concluído ✓"};
+    if(o.step >= 0) return {label:`Fase ${o.step} de ${last}`}; }catch(e){}
   return null;
 }
 /* ---------- telas ---------- */

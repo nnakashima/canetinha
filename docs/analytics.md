@@ -7,7 +7,7 @@
 | Parâmetro | Valores |
 |---|---|
 | `content_group` | `hub`, `episodio`, `episodio_em_breve` |
-| `episode_id` | slug do episódio (`matrizfdem`, `r5`…) ou vazio no hub |
+| `episode_id` | slug do episódio (`matrizfdem`, `selfpararh`, `r5`…) ou vazio no hub |
 | `app_version` | versão do sistema (ex.: `1.0.0`) |
 Todo evento customizado também leva `episode_id` (no hub, `hub`; o episódio clicado vai em `episode`).
 
@@ -27,6 +27,14 @@ Todo evento customizado também leva `episode_id` (no hub, `hub`; o episódio cl
 | Episódio | `report_whatsapp` / `report_copy` | — |
 | Episódio | `voice_input` | `result` (speech/keyboard_help) |
 | Episódio | `progress_imported` | `step` |
+| SELF para RH | `position_selected` | `position` (artista/gerente) |
+| SELF para RH | `question_answered` | `question` (1 a 13), sem a resposta |
+| SELF para RH | `media_added` | `type` (photo/video), `source` (camera/file) |
+| SELF para RH | `camera_error` | `error` |
+| SELF para RH | `nps_answered` | `score` (0 a 10), `category` (promotor/neutro/detrator) |
+| SELF para RH | `code_copy` / `report_video` | — / `method` |
+| SELF para RH | `trophy_reached` | `xp`, `position` |
+Nenhum evento leva nome, contato, foto, vídeo, respostas da avaliação nem comentário do NPS.
 
 ## Definições personalizadas (Administrador → Definições personalizadas)
 | Nome | Escopo | Parâmetro | Situação |
@@ -37,7 +45,8 @@ Todo evento customizado também leva `episode_id` (no hub, `hub`; o episódio cl
 Sugestão: registrar também `app_version`, `phase`, `category` e `method` se forem usados em relatórios.
 
 ## Onde olhar
-- **Acessos por episódio:** Relatórios → Engajamento → Páginas e telas (caminho da página: `/matrizfdem`, `/r5`…) ou Grupo de conteúdo.
+- **Acessos por episódio:** Relatórios → Engajamento → Páginas e telas (caminho da página: `/matrizfdem`, `/selfpararh`, `/r5`…) ou Grupo de conteúdo.
+- **NPS do SELF para RH:** Relatórios → Engajamento → Eventos → `nps_answered` (registrar `score` e `category` como dimensões personalizadas para ver a distribuição).
 - **Funil do episódio:** Explorar → Exploração de funil com `episode_start` → `phase_complete` (phase 0…5) → `trophy_reached` → `report_*`.
 - **Interesse em episódios futuros:** evento `episode_link_open` e `episode_details` com `status = soon`.
 - **Tempo real:** Relatórios → Tempo real (para testar).

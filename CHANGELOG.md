@@ -3,6 +3,14 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.10.0] — 2026-10-18
+### Adicionado
+- Hub: **SELF para RH** sai do "Em breve!" e vira o episódio 02 (Recrutamento e seleção, 6 fases, ~12 min), com ficha completa, botão de assistir, progresso ("Fase X de 6"/"Concluído") e selo "Novo" (que sai da Matriz FDEM).
+- Prévia do link `og-selfpararh-v2.jpg`, sem a faixa "EM BREVE".
+### Alterado
+- Hub: progresso calculado pelo número de fases de cada episódio (`last`), em vez de fixo em 6.
+- Documentação: analytics com os eventos do SELF para RH; `novo-episodio.md` aponta o SELF para RH como padrão.
+
 ## [1.9.2] — 2026-10-17
 ### Corrigido
 - Abertura (Matriz FDEM e SELF para RH): os dois pontinhos brancos do traço de caneta apareciam soltos na tela antes do título e do traço. Agora surgem só depois que o traço termina de ser desenhado.

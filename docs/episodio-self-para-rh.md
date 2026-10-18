@@ -1,6 +1,6 @@
-# Episódio: SELF para RH (protótipo)
+# Episódio: SELF para RH (episódio 02)
 
-"Quero Jogar no Time": jornada do candidato a uma vaga de loja, com o perfil SELF 4D resumido no fim. Página em `public/selfpararh/index.html`, chave local `selfpararh-v1`. O card do hub continua "Em breve!" enquanto o episódio é avaliado.
+"Quero Jogar no Time": jornada do candidato a uma vaga de loja, com o perfil SELF 4D resumido no fim. Página em `public/selfpararh/index.html`, chave local `selfpararh-v1`. No hub, é o episódio 02, na prateleira Gestão, marcado como "Novo".
 
 ## Fases
 | Fase | Rótulo | O que pede | Conclui quando |
