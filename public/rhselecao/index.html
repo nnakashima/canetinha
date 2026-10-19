@@ -250,6 +250,10 @@ table.cmp{border-collapse:separate;border-spacing:0;width:100%;min-width:560px;f
 .foot img{height:16px}
 @media(max-width:520px){.brand .t small{display:none}.iconbtn span{display:none}.bar{grid-template-columns:92px 1fr 36px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* iOS: campos com menos de 16px fazem o Safari dar zoom na página e ela fica maior que a tela */
+input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,select{font-size:max(16px,1em)}
+html,body{overflow-x:clip}
 </style>
 </head>
 <body>

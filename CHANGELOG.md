@@ -3,6 +3,11 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.11.3] — 2026-10-18
+### Corrigido
+- iPhone (testado no 12 e no 16): confetes deixavam rastros coloridos nas bordas da tela. A camada de confete agora usa o tamanho real da tela, se ajusta quando a barra do Safari aparece ou some e é limpa por inteiro a cada quadro (hub, Matriz FDEM e SELF para RH).
+- iPhone: ao tocar num campo de texto com letra menor que 16 px, o Safari dava zoom na página e ela ficava maior que a tela até o usuário ajustar com os dedos. Todos os campos passam a ter no mínimo 16 px (Matriz FDEM, SELF para RH e RH Seleção), e a página não rola mais para os lados.
+
 ## [1.11.2] — 2026-10-18
 ### Alterado
 - SELF para RH, fase 2: as situações são respondidas em sequência, uma de cada vez. Sai a lista de todas as perguntas abaixo da situação atual e não é mais possível voltar a uma situação já respondida.

@@ -685,18 +685,20 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeSheet(); });
 
 /* ---------- confete ---------- */
 const cv=$("#fx"), ctx=cv.getContext("2d"); let parts=[], raf=null;
-function size(){ const r=devicePixelRatio||1; cv.width=innerWidth*r; cv.height=innerHeight*r; ctx.setTransform(r,0,0,r,0,0); }
-addEventListener("resize",size); size();
+let CW=innerWidth, CH=innerHeight;
+function wipe(){ ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); ctx.restore(); }
+function size(){ const r=devicePixelRatio||1; CW=cv.clientWidth||innerWidth; CH=cv.clientHeight||innerHeight; cv.width=Math.round(CW*r); cv.height=Math.round(CH*r); ctx.setTransform(r,0,0,r,0,0); }
+addEventListener("resize",size); if(window.visualViewport) visualViewport.addEventListener("resize",size); addEventListener("orientationchange",()=>setTimeout(size,300)); size();
 function burst(n){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const css=getComputedStyle(document.documentElement), cols=["f","d","e","m"].map(c=>css.getPropertyValue("--"+c).trim());
-  for(let i=0;i<n;i++) parts.push({x:innerWidth/2+(Math.random()-.5)*80,y:innerHeight*.45,vx:(Math.random()-.5)*13,vy:-Math.random()*13-4,s:Math.random()*7+5,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[i%4],life:1,sq:Math.random()<.5});
+  for(let i=0;i<n;i++) parts.push({x:CW/2+(Math.random()-.5)*80,y:CH*.45,vx:(Math.random()-.5)*13,vy:-Math.random()*13-4,s:Math.random()*7+5,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[i%4],life:1,sq:Math.random()<.5});
   if(!raf) raf=requestAnimationFrame(tick);
 }
-function tick(){ ctx.clearRect(0,0,innerWidth,innerHeight);
+function tick(){ wipe();
   parts.forEach(p=>{ p.vy+=.38; p.vx*=.985; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life-=.009; ctx.save(); ctx.globalAlpha=Math.max(0,p.life); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle=p.c;
     if(p.sq) ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6); else { ctx.beginPath(); ctx.arc(0,0,p.s/2.4,0,7); ctx.fill(); } ctx.restore(); });
-  parts=parts.filter(p=>p.life>0&&p.y<innerHeight+40); raf=parts.length?requestAnimationFrame(tick):(ctx.clearRect(0,0,innerWidth,innerHeight),null); }
+  parts=parts.filter(p=>p.life>0&&p.y<CH+40&&p.x>-40&&p.x<CW+40); raf=parts.length?requestAnimationFrame(tick):(wipe(),null); }
 
 /* ---------- abertura (uma vez por sessão) ---------- */
 function splash(){
