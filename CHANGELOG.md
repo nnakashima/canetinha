@@ -3,6 +3,14 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.11.2] — 2026-10-18
+### Alterado
+- SELF para RH, fase 2: as situações são respondidas em sequência, uma de cada vez. Sai a lista de todas as perguntas abaixo da situação atual e não é mais possível voltar a uma situação já respondida.
+- SELF para RH: a última fase passa a se chamar "Fase 6 · Final" (antes "Troféu"); botões "Ir para o final".
+- SELF para RH: status "APTO A PROSSEGUIR NO PROCESSO" (antes "APTO") na tela, no relatório, no PDF e no resumo do WhatsApp.
+### Corrigido
+- SELF para RH: em celulares estreitos (até 380 px), as qualidades do perfil (ex.: "Comunicativo") não são mais cortadas no cartão.
+
 ## [1.11.1] — 2026-10-18
 ### Adicionado
 - RH Seleção: capa de abertura com o título "como escolher quem encaixa na sua operação", a frase-guia ("quem melhor se encaixa nesta vaga, nesta loja, agora, e sabendo o porquê") e o fluxo em 5 passos (Candidato, Negócio, Vaga, Análise, Decisão). Aparece no início de cada sessão; o logo no topo volta para ela. Botões "Começar", ou "Continuar" e "Nova vaga" quando já há um processo.

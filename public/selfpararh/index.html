@@ -246,13 +246,14 @@ input,textarea{min-width:0;max-width:100%}
 .ach svg{width:26px;height:26px;color:var(--f)}
 .ach .qk{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 .ach .qv{font-family:var(--font-display);font-weight:400;font-size:clamp(11.5px,3.6vw,14px);line-height:1.15;color:var(--fg);overflow-wrap:normal;hyphens:auto}
+@media(max-width:380px){.ach:not(.q-ok) .qv{font-family:var(--font-body);font-weight:900;font-size:13.5px;letter-spacing:0}}
 .ach.long{grid-column:1/-1;padding:12px 14px}.ach.long .qv{font-family:var(--font-body);font-weight:800;font-size:15px;line-height:1.35}
 .ach.q-ok{grid-column:span 2;grid-template-columns:auto auto;align-items:center;justify-content:center;column-gap:10px}.ach.q-ok svg{grid-row:span 2}
 .ach.q-d{box-shadow:inset 0 0 0 2px var(--d)} .ach.q-d svg{color:var(--d)}
 .ach.q-e{box-shadow:inset 0 0 0 2px var(--e)} .ach.q-e svg{color:var(--e)}
 .ach.q-m{box-shadow:inset 0 0 0 2px var(--m)} .ach.q-m svg{color:var(--m)}
 .ach.q-v{box-shadow:inset 0 0 0 2px #9B7BFF} .ach.q-v svg{color:#9B7BFF}
-.ach.q-ok{background:var(--m);box-shadow:0 4px 0 var(--m-d)} .ach.q-ok svg{color:var(--ink)} .ach.q-ok .qk{color:var(--ink);opacity:.7} .ach.q-ok .qv{color:var(--ink);font-size:20px}
+.ach.q-ok{background:var(--m);box-shadow:0 4px 0 var(--m-d)} .ach.q-ok svg{color:var(--ink)} .ach.q-ok .qk{color:var(--ink);opacity:.7} .ach.q-ok .qv{color:var(--ink);font-size:clamp(13px,3.8vw,16px);line-height:1.2;text-align:left}
 .copyarea{width:100%;min-height:180px;font-size:13px;font-weight:600}
 .ver{display:inline-block;margin-top:6px;font-variant-numeric:tabular-nums;opacity:.85}
 .hub-link{display:inline-block;margin-bottom:14px;padding:10px 16px;border-radius:12px;background:var(--surface);border:2px solid var(--line);color:var(--fg);font-weight:900;font-size:13px;text-decoration:none}
@@ -747,7 +748,7 @@ const PH = [
   {label:"Experiência", title:"Sua experiência",     intro:"Conte onde você já trabalhou. Primeiro emprego? Tudo bem, é só marcar.", quest:"Informe uma experiência ou marque primeiro emprego"},
   {label:"Formação",    title:"Sua formação",        intro:"Onde você estuda ou estudou. Vale escola, curso técnico, faculdade ou curso livre.", quest:"Informe escola, curso e ano"},
   {label:"Dados",       title:"Seus dados",          intro:"Para o RH conseguir falar com você. Tudo fica só neste celular até você decidir enviar.", quest:"Preencha seus contatos e autorize o uso"},
-  {label:"Troféu",      title:"Jornada concluída"}
+  {label:"Final",       title:"Jornada concluída"}
 ];
 const LAST = PH.length - 1;
 const RANKS = ["Novato","Aprendiz","Talento","Destaque","Craque","Lenda do Time"];
@@ -1163,7 +1164,8 @@ function screen1(){
 
 function screen2(){
   const done = nAns() === NQ;
-  if(!done && !(S.qi >= 0 && S.qi < NQ)) S.qi = Math.max(0, S.ans.findIndex(a=>a===null));
+  // preenchimento sequencial: sempre a próxima situação sem resposta, sem voltar às anteriores
+  S.qi = done ? NQ : Math.max(0, S.ans.findIndex(a=>a===null));
   const qi = S.qi;
   let arena;
   if(qi < NQ){
@@ -1180,10 +1182,9 @@ function screen2(){
     arena = `<div class="arena"><div class="deck">Avaliação completa</div>
       ${letters()}
       <p class="q">As ${NQ} situações foram respondidas.</p>
-      <p class="cat-desc">Seu perfil SELF aparece no troféu. Toque numa situação abaixo se quiser trocar a resposta.</p></div>`;
+      <p class="cat-desc">Suas respostas foram registradas. Seu perfil SELF aparece na fase final.</p></div>`;
   }
-  const list = QS.map((q,i)=>`<button class="it" data-qgo="${i}">${S.ans[i]!==null?bd("ABCD"[permOf(i).indexOf(S.ans[i])],"m"):`<span class="bd none">?</span>`}<span class="nm">${esc(q.s)}</span></button>`).join("");
-  return shell(2, arena + `<div class="list qlist">${list}</div>`, "Contar experiência");
+  return shell(2, arena, "Contar experiência");
 }
 
 function entryX(r, i, n){
@@ -1215,7 +1216,7 @@ function entryD(r, i, n){
   </div>`;
 }
 function screen4(){
-  return shell(4, S.edu.list.map((r,i)=>entryD(r,i,S.edu.list.length)).join("") + `<button class="add" data-add="d">+ Adicionar outra formação</button>`, "Pegar troféu");
+  return shell(4, S.edu.list.map((r,i)=>entryD(r,i,S.edu.list.length)).join("") + `<button class="add" data-add="d">+ Adicionar outra formação</button>`, "Ir para o final");
 }
 
 const ICAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>';
@@ -1255,7 +1256,7 @@ function screen5(){
     </div>
     <button class="tog ${S.consent?"on":""}" id="u-consent" data-act="consent" aria-pressed="${S.consent}"><span class="chk">${ICON.check}</span><span>Autorizo o uso dos meus dados, foto e vídeo só para este processo seletivo.</span></button>
     <div class="note">${ICON.info}<span>Seus dados ficam guardados apenas neste celular. Eles só chegam ao RH quando você enviar o relatório. Você pode apagar tudo no fim, em "Recomeçar do zero".</span></div>
-  `, "Pegar troféu");
+  `, "Ir para o final");
 }
 
 /* vídeo: guardado no IndexedDB deste aparelho */
@@ -1391,9 +1392,9 @@ function portrait(){
   if(!P.p1) return null;
   const q = {disc:Q_DISC[P.p1], ie:Q_IE[P.ieCat], mot:P.mot?Q_MOT[P.mot]:"Motivado", lc:Q_LC[P.lcCat]};
   const praise = `${q.disc} e ${q.lc.toLowerCase()}, ${P.mot?P_MOT[P.mot]:"cheio de vontade"} ${P_IE[P.ieCat]}.`;
-  return {q, praise, status:"APTO", cards:[
+  return {q, praise, status:"APTO A PROSSEGUIR NO PROCESSO", cards:[
     {k:"Estilo", v:q.disc, c:"f"}, {k:"Emoções", v:q.ie, c:"d"}, {k:"Motivação", v:q.mot, c:"m"},
-    {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO", c:"ok"}]};
+    {k:"Locus", v:q.lc, c:"e"}, {k:"Status", v:"APTO A PROSSEGUIR NO PROCESSO", c:"ok"}]};
 }
 /* auto-retrato: 2 parágrafos em linguagem simples, sempre positivos e neutros (sem recomendação de carreira) */
 const A_DISC = {
@@ -1468,7 +1469,7 @@ function screen6(){
   const x = xp(), P = profile(), pos = posOf(S.pos);
   return `<section class="stage"><div class="hero">
     ${S.photo?`<img class="avatar" src="${S.photo}" alt="">`:`<div style="color:var(--f)">${ICON.trophy.replace("<svg",'<svg class="trophy"')}</div>`}
-    <div class="eyebrow">Fase ${LAST} · Troféu</div>
+    <div class="eyebrow">Fase ${LAST} · Final</div>
     <h2 style="font-size:clamp(26px,8vw,36px)">Jornada concluída</h2>
     <p class="intro" style="text-align:center">Nível ${levelOf(x)} · ${esc(rankOf(x))} · ${x} XP</p>
   </div>
@@ -1604,7 +1605,6 @@ document.addEventListener("click", e=>{
     if(i<0){ S.why.tags.push(w); SND.play("yes"); } else { S.why.tags.splice(i,1); SND.play("click"); }
     save(); b.classList.toggle("on", i<0); b.setAttribute("aria-pressed", i<0); hud(); checkPhaseDone(wasDone); return; }
   if(b.dataset.ans !== undefined){ return answer(+b.dataset.ans); }
-  if(b.dataset.qgo !== undefined){ S.qi = +b.dataset.qgo; save(); render(); const ar = $(".arena"); if(ar) ar.scrollIntoView({block:"start", behavior:"smooth"}); return; }
   if(b.dataset.add){ const k = b.dataset.add; const r = k==="x" ? xrow() : erow(); (k==="x"?S.exp:S.edu).list.push(r); save(); render(`${k}-${r.id}-${k==="x"?"company":"school"}`); return; }
   if(b.dataset.del){ const [k,id] = b.dataset.del.split("."); const L = k==="x"?S.exp:S.edu; L.list = L.list.filter(r=>r.id!==id); save(); render(); return; }
   const act = b.dataset.act;
@@ -1774,7 +1774,7 @@ function cardHTML(){
     <div class="rc-title"><div class="k">${PROGRAM} · ${HUD_TITLE}</div><h3>${EPISODE}</h3></div>
     <div class="rf-who">${S.photo?`<img src="${S.photo}" alt="">`:""}<div><b>${esc(t(S.name)||"Participante")}</b><span>${esc(pos?pos.title:"")}</span><em>Nível ${levelOf(x)} · ${esc(rankOf(x))} · ${x} XP</em></div></div>
 
-    ${sec("Contato", row("WhatsApp", esc(t(S.phone))) + row("E-mail", esc(t(S.email))) + row("Endereço", esc(addrLine())) + row("Vídeo", S.video?"Gravado (compartilhe pelo botão do troféu)":""))}
+    ${sec("Contato", row("WhatsApp", esc(t(S.phone))) + row("E-mail", esc(t(S.email))) + row("Endereço", esc(addrLine())) + row("Vídeo", S.video?"Gravado (compartilhe pelo botão da tela final)":""))}
 
     ${sec("Vaga", row("Posição", esc(pos?pos.title:"-")) + row("Área", esc(pos?pos.tag:"")) +
       row("Por que este time", esc(S.why.tags.join(" · "))) + row("Em suas palavras", esc(t(S.why.text))))}
@@ -1879,7 +1879,7 @@ function buildPDF(){
   pills.slice().reverse().forEach(([txt,bg,fg])=>{ const w = doc.getTextWidth(txt)+8; px -= w; fill(bg); doc.roundedRect(px,y-1,w,7.5,3.75,3.75,"F"); color(fg); doc.text(txt, px+w/2, y+3.9, {align:"center"}); px -= 2.5; });
   y += S.photo ? 24 : 22;
   font("bold",7); let ax = M;
-  { const R = portrait(); if(R){ const items = [[R.q.disc,RGB.F],[R.q.ie,RGB.D],[R.q.mot,RGB.M],[R.q.lc,RGB.E],["STATUS: APTO",[46,160,90]]];
+  { const R = portrait(); if(R){ const items = [[R.q.disc,RGB.F],[R.q.ie,RGB.D],[R.q.mot,RGB.M],[R.q.lc,RGB.E],["STATUS: APTO A PROSSEGUIR NO PROCESSO",[46,160,90]]];
     items.forEach(([txt0,col],i)=>{ const txt = T(String(txt0).toUpperCase()); const w = doc.getTextWidth(txt)+7;
       fill(i===4?col:RGB.soft); draw(col); doc.setLineWidth(.4); doc.roundedRect(ax,y,w,6,3,3,"FD"); color(i===4?RGB.white:RGB.ink); doc.text(txt, ax+w/2, y+4.1, {align:"center"}); ax += w + 2; });
     y += 2; } }
@@ -1999,7 +1999,7 @@ async function exportPDF(){
     if(r==="cancel"){ say("Envio cancelado. Toque em PDF completo para tentar de novo."); return; }
     say(r==="shared" ? "PDF compartilhado." : "PDF baixado na pasta de downloads. Anexe na conversa do WhatsApp ou no e-mail.");
     track("report_pdf", {method:r});
-    toast("PDF gerado <b>+ troféu salvo</b>"); burst(60); SND.play("phase");
+    toast("PDF gerado <b>com sucesso</b>"); burst(60); SND.play("phase");
   }catch(e){
     const c = e && e.code;
     if(c==="declined") say("Download cancelado. Toque em Gerar PDF para tentar de novo.");

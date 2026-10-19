@@ -7,11 +7,11 @@
 |---|---|---|---|
 | 0 | Posição | carrossel com as vagas abertas (`POS`) | uma vaga escolhida |
 | 1 | Por quê | motivos em chips (`WHY`) + texto livre opcional | 1 motivo ou texto |
-| 2 | Avaliação | 5 situações (`QS`), uma opção por situação | as 5 respondidas |
+| 2 | Avaliação | 13 situações (`QS`) em sequência, uma opção por situação, sem voltar às anteriores | as 13 respondidas |
 | 3 | Experiência | empresa, cargo, tempo (anos/meses); "primeiro emprego" | 1 experiência completa ou primeiro emprego |
 | 4 | Formação | escola, curso, ano de conclusão (ou "cursando") | 1 formação completa |
 | 5 | Dados | nome, WhatsApp, e-mail, CEP (ViaCEP preenche endereço, bairro e cidade), número; foto e vídeo opcionais; autorização LGPD | todos os campos (bairro opcional) + autorização |
-| 6 | Troféu | perfil SELF, conquistas e exportações (tela, PDF, WhatsApp, vídeo) | — |
+| 6 | Final | perfil SELF, conquistas e exportações (tela, PDF, WhatsApp, vídeo) | — |
 
 ## Avaliação (fase 2)
 13 situações ilustradas, uma escolha por situação, opções embaralhadas (`PERM`) e pesos ocultos.
@@ -25,7 +25,7 @@
 
 Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[high|mid|low] M[motivador]`, ex.: `Is LCint IEhigh Msoc`.
 
-## Retrato (troféu)
+## Retrato (fase final)
 | Dimensão | Resultado → qualidade |
 |---|---|
 | Estilo (DISC principal) | D Decidido · I Comunicativo · S Parceiro · C Caprichoso |
@@ -33,7 +33,7 @@ Código SELF (padrão SELF 4D): `[Primário][secundário] LC[int|mix|ext] IE[hig
 | Motivação | THE Curioso · UTI Realizador · AES Harmonioso · SOC Prestativo · IND Ambicioso · TRA Confiável |
 | Locus | Interno Protagonista · Misto Realista · Externo Adaptável |
 
-Status: sempre "APTO" (o episódio não reprova ninguém). O elogio (`portrait().praise`) é calculado, mas não aparece em nenhum relatório.
+Status: sempre "APTO A PROSSEGUIR NO PROCESSO" (o episódio não reprova ninguém). O elogio (`portrait().praise`) é calculado, mas não aparece em nenhum relatório.
 
 ## Auto-retrato
 `analysis()` monta 2 parágrafos com frases fixas por resultado (`A_DISC`, `A_DISC2`, `A_IE`, `A_LC`, `A_MOT`, `A_MOT2`): 1º estilo + emoções; 2º locus + motivação + fechamento. Regras do texto: segunda pessoa, linguagem simples, sempre positivo e neutro, sem recomendação de carreira e sem comentar empresas. Os relatórios não mostram situações nem respostas da avaliação.
@@ -61,4 +61,4 @@ Eventos: `episode_start`, `position_selected` (position), `question_answered` (q
 `openCam("photo"|"video")` usa `getUserMedia` (câmera frontal, com botão para virar) e `MediaRecorder` (mp4 quando o navegador aceita, senão webm), limite de 30 s. Sem suporte ou sem permissão, cai no seletor de arquivo. Arquivos também podem ser enviados pelos chips "Foto" e "Vídeo".
 
 ## Dados pessoais
-Ficam só no aparelho: textos e foto no `localStorage` (`selfpararh-v1`), vídeo no IndexedDB (`selfpararh`). "Recomeçar do zero" apaga tudo. A foto entra no PDF e no cartão; o vídeo é compartilhado à parte pelo botão do troféu.
+Ficam só no aparelho: textos e foto no `localStorage` (`selfpararh-v1`), vídeo no IndexedDB (`selfpararh`). "Recomeçar do zero" apaga tudo. A foto entra no PDF e no cartão; o vídeo é compartilhado à parte pelo botão da fase final.
