@@ -3,6 +3,10 @@
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e [SemVer](https://semver.org/lang/pt-BR/).
 Para lançar uma versão: altere `version` em `package.json`, registre aqui, faça commit, crie a tag `vX.Y.Z` e faça push (ver [docs/operacao.md](docs/operacao.md)).
 
+## [1.11.4] — 2026-10-19
+### Alterado
+- SELF para RH: o ícone da fase final passa de troféu para bandeira quadriculada (reta de chegada), no mapa de fases e no topo da tela final.
+
 ## [1.11.3] — 2026-10-18
 ### Corrigido
 - iPhone (testado no 12 e no 16): confetes deixavam rastros coloridos nas bordas da tela. A camada de confete agora usa o tamanho real da tela, se ajusta quando a barra do Safari aparece ou some e é limpa por inteiro a cada quadro (hub, Matriz FDEM e SELF para RH).
